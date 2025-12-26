@@ -111,7 +111,7 @@ Contributions are the heart of this project! We welcome fixes for typos, new wor
 
 ## �📄 License
 
-Copyright © 2025 InanXR.
+Copyright © 2025 Inan.
 
 This project is licensed under the **Apache License, Version 2.0** (the "License").
 
