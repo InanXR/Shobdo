@@ -4,6 +4,9 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Kaggle](https://img.shields.io/badge/Kaggle-Dataset-20BEFF?logo=kaggle)](https://www.kaggle.com/datasets/inanxr/project-shobdo)
+[![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Dataset-yellow)](https://huggingface.co/datasets/inanxr/ProjectShobdo)
+[![Web App](https://img.shields.io/badge/🌐%20Live-Demo-brightgreen)](https://inanxr.github.io/ProjectShobdo/)
 
 **ProjectShobdo** is an open-source initiative dedicated to preserving and modernizing the Bengali language for the digital era. We provide a structured, high-quality corpus of over **45,000 Bengali words**, meticulously organized with meanings, pronunciations, parts of speech, and etymological data.
 
@@ -91,7 +94,22 @@ Contributions are the heart of this project! We welcome fixes for typos, new wor
 
 ---
 
-## 📄 License
+## � Links
+
+| Platform | Link |
+|----------|------|
+| 🌐 **Web App** | [inanxr.github.io/ProjectShobdo](https://inanxr.github.io/ProjectShobdo/) |
+| 📊 **Kaggle Dataset** | [kaggle.com/datasets/inanxr/project-shobdo](https://www.kaggle.com/datasets/inanxr/project-shobdo) |
+| 📓 **Kaggle Notebook** | [kaggle.com/code/inanxr/shobdo](https://www.kaggle.com/code/inanxr/shobdo) |
+| 🤗 **HuggingFace** | [huggingface.co/datasets/inanxr/ProjectShobdo](https://huggingface.co/datasets/inanxr/ProjectShobdo) |
+
+### Author
+
+**Inan** — [inan.iseer.co](https://inan.iseer.co) • [inan@iseer.co](mailto:inan@iseer.co)
+
+---
+
+## �📄 License
 
 Copyright © 2025 InanXR.
 
