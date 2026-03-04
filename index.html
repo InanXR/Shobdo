@@ -6,15 +6,11 @@
     <title>ProjectShobdo | Open Bengali Dictionary</title>
     <link rel="icon" type="image/x-icon" href="assets/Favicon.ico">
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <script>
@@ -23,30 +19,43 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Hind Siliguri"', 'sans-serif'],
+                        sans: ['"Hind Siliguri"', '"DM Sans"', 'sans-serif'],
+                        serif: ['"DM Serif Display"', 'serif'],
+                        display: ['"DM Serif Display"', 'serif'],
                     },
                     colors: {
                         brand: {
-                            purple: '#7c3aed',
-                            light: '#ddd6fe',
-                            dark: '#4c1d95',
+                            50:  '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
                         }
-                    },
-                    animation: {
-                        'blob': 'blob 7s infinite',
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
                     },
                     keyframes: {
                         blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '0%,100%': { transform: 'translate(0,0) scale(1)' },
+                            '33%':     { transform: 'translate(30px,-50px) scale(1.1)' },
+                            '66%':     { transform: 'translate(-20px,20px) scale(0.9)' },
                         },
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                        fadeUp: {
+                            '0%':   { opacity: '0', transform: 'translateY(16px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        shimmer: {
+                            '0%':   { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
                         }
+                    },
+                    animation: {
+                        blob:     'blob 9s infinite',
+                        'fade-up':'fadeUp 0.45s ease-out forwards',
+                        shimmer:  'shimmer 1.5s infinite linear',
                     }
                 }
             }
@@ -54,254 +63,524 @@
     </script>
 
     <style>
-        /* Glassmorphism Utilities - NO SHADOWS */
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+        /* ── Base ───────────────────────────────────────── */
+        * { box-sizing: border-box; }
+
+        ::selection { background: #7c3aed; color: #fff; }
+
+        body {
+            background-color: #f8f7ff;
+            color: #1e1b4b;
+        }
+        .dark body,
+        .dark {
+            background-color: #0d0c1a;
+            color: #ede9fe;
         }
 
-        .dark .glass {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* ── Scrollbar ──────────────────────────────────── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #7c3aed44; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #7c3aed99; }
+
+        /* ── Aurora bg ──────────────────────────────────── */
+        .aurora-wrap { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
+        .aurora-blob {
+            position: absolute;
+            border-radius: 9999px;
+            filter: blur(80px);
+            mix-blend-mode: multiply;
+            opacity: 0.18;
         }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .dark .aurora-blob { mix-blend-mode: screen; opacity: 0.12; }
+
+        /* ── Sidebar ────────────────────────────────────── */
+        .sidebar {
+            width: 280px;
+            min-height: 100vh;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+            border-right: 1px solid rgba(124,58,237,0.12);
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .dark .sidebar {
+            background: rgba(18,15,36,0.8);
+            border-right-color: rgba(124,58,237,0.18);
         }
 
-        .dark .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* ── Search bar ─────────────────────────────────── */
+        .search-wrap {
+            background: rgba(255,255,255,0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(124,58,237,0.18);
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .dark .search-wrap {
+            background: rgba(22,18,42,0.82);
+            border-color: rgba(124,58,237,0.22);
+        }
+        .search-wrap:focus-within {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
         }
 
-        .glass-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(124, 58, 237, 0.5);
-            background: rgba(255, 255, 255, 0.8);
+        /* ── Word card ──────────────────────────────────── */
+        .word-card {
+            background: #ffffff;
+            border: 1px solid rgba(124,58,237,0.1);
+            transition: transform 0.28s cubic-bezier(.4,0,.2,1),
+                        border-color 0.28s,
+                        background 0.28s;
+        }
+        .dark .word-card {
+            background: rgba(28,22,52,0.9);
+            border-color: rgba(124,58,237,0.15);
+        }
+        .word-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(124,58,237,0.45);
+        }
+        .dark .word-card:hover { border-color: rgba(139,92,246,0.5); }
+
+        /* ── POS badge ──────────────────────────────────── */
+        .pos-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(124,58,237,0.25);
+            background: rgba(124,58,237,0.08);
+            color: #6d28d9;
+        }
+        .dark .pos-badge { background: rgba(124,58,237,0.18); color: #c4b5fd; border-color: rgba(139,92,246,0.3); }
+
+        /* ── Meaning list ───────────────────────────────── */
+        .meaning-item::before {
+            content: '';
+            display: inline-block;
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: #7c3aed;
+            margin-right: 10px;
+            flex-shrink: 0;
+            margin-top: 9px;
         }
 
-        .dark .glass-card:hover {
-            border-color: rgba(139, 92, 246, 0.5);
-            background: rgba(30, 41, 59, 0.9);
+        /* ── Divider ─────────────────────────────────────── */
+        .ruled { border-color: rgba(124,58,237,0.12); }
+        .dark .ruled { border-color: rgba(124,58,237,0.18); }
+
+        /* ── Skeleton shimmer ───────────────────────────── */
+        .skeleton {
+            background: linear-gradient(90deg, #ede9fe 25%, #c4b5fd55 50%, #ede9fe 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 6px;
+        }
+        .dark .skeleton {
+            background: linear-gradient(90deg, #1e1a38 25%, #2d2550 50%, #1e1a38 75%);
+            background-size: 200% 100%;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        /* ── Stat pill ──────────────────────────────────── */
+        .stat-pill {
+            background: rgba(124,58,237,0.08);
+            border: 1px solid rgba(124,58,237,0.15);
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            color: #6d28d9;
         }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(124, 58, 237, 0.3);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(124, 58, 237, 0.6);
+        .dark .stat-pill { color: #c4b5fd; background: rgba(124,58,237,0.15); border-color: rgba(139,92,246,0.25); }
+
+        /* ── Fade in ─────────────────────────────────────── */
+        .opacity-0 { opacity: 0; }
+
+        /* ── Mobile sidebar overlay ─────────────────────── */
+        #sidebarOverlay { display:none; }
+        #sidebarOverlay.active { display:block; }
+
+        @media (max-width: 1023px) {
+            .sidebar {
+                position: fixed;
+                left: -320px;
+                top: 0; bottom: 0;
+                z-index: 60;
+                transition: left 0.3s cubic-bezier(.4,0,.2,1);
+                width: 280px;
+                min-height: unset;
+                height: 100%;
+            }
+            .sidebar.open { left: 0; }
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 relative overflow-x-hidden selection:bg-brand-purple selection:text-white transition-colors duration-300">
 
-    <!-- Theme Toggle -->
-    <button id="themeToggle" class="fixed top-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full glass hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all duration-300 group border border-slate-200 dark:border-slate-700">
-        <i class="ph ph-sun text-xl text-amber-500 dark:hidden"></i>
-        <i class="ph ph-moon text-xl text-brand-purple hidden dark:block"></i>
-    </button>
+<body class="transition-colors duration-300 dark:bg-[#0d0c1a] bg-[#f8f7ff]">
 
-    <!-- Aurora Background (Kept as it's background, not UI shadow, but reduced opacity) -->
-    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-300 dark:bg-purple-900/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 animate-blob"></div>
-        <div class="absolute top-0 right-1/4 w-96 h-96 bg-blue-300 dark:bg-blue-900/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-300 dark:bg-pink-900/40 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-    </div>
+<!-- Aurora -->
+<div class="aurora-wrap">
+    <div class="aurora-blob w-[600px] h-[600px] bg-purple-400 dark:bg-purple-900 top-[-10%] left-[-5%] animate-blob"></div>
+    <div class="aurora-blob w-[500px] h-[500px] bg-blue-300 dark:bg-blue-900 top-[20%] right-[-8%] animate-blob" style="animation-delay:3s"></div>
+    <div class="aurora-blob w-[400px] h-[400px] bg-fuchsia-300 dark:bg-fuchsia-900 bottom-[-10%] left-[35%] animate-blob" style="animation-delay:6s"></div>
+</div>
 
-    <div class="container mx-auto px-4 py-12 max-w-6xl">
-        
-        <!-- Header -->
-        <header class="text-center mb-16 relative flex flex-col items-center">
-            <img src="assets/LOGO.png" alt="ProjectShobdo Logo" class="h-32 md:h-40 object-contain mb-6 filter dark:brightness-110 hover:scale-105 transition-transform duration-300">
-            
-            <div class="space-y-1">
-                <p class="text-2xl text-slate-600 dark:text-slate-300 font-semibold tracking-wide">ProjectShobdo</p>
-                <p class="text-sm text-slate-400 dark:text-slate-500 uppercase tracking-widest font-medium">Open Bengali Lexical Corpus</p>
-            </div>
-        </header>
+<!-- Mobile sidebar overlay -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-50 backdrop-blur-sm lg:hidden" onclick="closeSidebar()"></div>
 
-        <!-- Search Section -->
-        <div class="sticky top-6 z-40 mb-16">
-            <div class="relative max-w-2xl mx-auto group">
-                <div class="relative flex items-center glass rounded-full px-8 py-5 transition-all duration-300 border border-white/60 dark:border-white/10 focus-within:border-brand-purple dark:focus-within:border-brand-purple focus-within:ring-1 focus-within:ring-brand-purple/50">
-                    <i class="ph ph-magnifying-glass text-2xl text-slate-400 dark:text-slate-500 mr-5 transition-colors group-focus-within:text-brand-purple"></i>
-                    <input 
-                        type="text" 
-                        id="searchInput" 
-                        placeholder="শব্দ খুঁজুন... (Search words)" 
-                        class="w-full bg-transparent text-xl text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none font-medium"
-                        disabled
-                    >
-                    <div id="loadingSpinner" class="animate-spin text-brand-purple ml-4">
-                        <i class="ph ph-spinner-gap text-2xl"></i>
-                    </div>
+<!-- ── Shell ─────────────────────────────────────────────── -->
+<div class="flex min-h-screen relative">
+
+    <!-- ══ SIDEBAR ══════════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="flex flex-col h-full px-6 py-8">
+
+            <!-- Logo -->
+            <div class="flex items-center gap-3 mb-8">
+                <img src="assets/LOGO.png" alt="ProjectShobdo" class="h-10 object-contain dark:brightness-125">
+                <div>
+                    <div class="font-bold text-brand-600 dark:text-brand-300 text-sm leading-none">ProjectShobdo</div>
+                    <div class="text-[10px] uppercase tracking-widest text-slate-400 mt-0.5">Bengali Lexicon</div>
                 </div>
             </div>
-        </div>
 
-        <!-- Results Grid (Standard Cards) -->
-        <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Results will be injected here -->
-        </div>
+            <hr class="ruled border-t mb-6">
 
-        <!-- Empty State -->
-        <div id="emptyState" class="hidden text-center py-24 animate-fade-in">
-            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white/50 dark:bg-slate-800/50 text-brand-purple mb-6 border border-white/50 dark:border-slate-700">
-                <i class="ph ph-books text-5xl opacity-80"></i>
+            <!-- Stats -->
+            <div id="sidebarStats" class="space-y-3 mb-8">
+                <div class="skeleton h-4 w-3/4"></div>
+                <div class="skeleton h-4 w-1/2"></div>
             </div>
-            <h3 class="text-3xl font-bold text-slate-700 dark:text-slate-200 mb-3">শব্দ খুঁজুন</h3>
-            <p class="text-slate-500 dark:text-slate-400 text-lg">Search for a word to explore the dictionary</p>
-        </div>
 
-    </div>
-
-    <!-- Footer -->
-    <footer class="text-center py-12 text-slate-400 dark:text-slate-500 text-sm">
-        <div class="flex justify-center items-center gap-2 mb-4">
-            <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
-            <span class="w-16 h-1 rounded-full bg-slate-200 dark:bg-slate-800"></span>
-            <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
-        </div>
-        <p>&copy; 2025 ProjectShobdo. Open Source (CC-BY-SA 4.0).</p>
-        <div class="flex justify-center gap-6 mt-4">
-            <a href="https://github.com/InanXR/ProjectShobdo" class="hover:text-brand-purple transition-colors flex items-center gap-2 font-medium">
-                <i class="ph ph-github-logo text-xl"></i> GitHub
-            </a>
-            <a href="dist/json/dictionary.min.json" class="hover:text-brand-purple transition-colors flex items-center gap-2 font-medium">
-                <i class="ph ph-database text-xl"></i> JSON Data
-            </a>
-        </div>
-    </footer>
-
-    <script>
-        // Theme Management
-        const themeToggle = document.getElementById('themeToggle');
-        const html = document.documentElement;
-        
-        // Check local storage or system preference
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            html.classList.add('dark');
-        } else {
-            html.classList.remove('dark');
-        }
-
-        themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
-        });
-
-        // Dictionary Logic
-        let dictionary = [];
-        const searchInput = document.getElementById('searchInput');
-        const resultsDiv = document.getElementById('results');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const emptyState = document.getElementById('emptyState');
-
-        // Load Dictionary
-        fetch('dist/json/dictionary.min.json')
-            .then(response => response.json())
-            .then(data => {
-                dictionary = data;
-                loadingSpinner.style.display = 'none';
-                searchInput.disabled = false;
-                searchInput.focus();
-                showRandomWords();
-            })
-            .catch(err => {
-                console.error(err);
-                loadingSpinner.style.display = 'none';
-                searchInput.placeholder = "Error loading data.";
-            });
-
-        // Search Logic
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim().toLowerCase();
-            
-            if (!query) {
-                showRandomWords();
-                return;
-            }
-            
-            const results = dictionary.filter(entry => {
-                const word = entry.word.toLowerCase();
-                const eng = (entry.english_translation || '').toLowerCase();
-                return word.includes(query) || eng.includes(query);
-            }).slice(0, 50);
-
-            renderResults(results);
-        });
-
-        function renderResults(entries) {
-            if (entries.length === 0) {
-                resultsDiv.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                emptyState.querySelector('h3').textContent = 'কোনো ফলাফল পাওয়া যায়নি';
-                emptyState.querySelector('p').textContent = 'No results found';
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            
-            resultsDiv.innerHTML = entries.map((entry, index) => `
-                <div class="glass-card rounded-2xl p-6 flex flex-col h-full animate-fade-in group" style="animation-delay: ${index * 50}ms">
-                    <div class="flex justify-between items-start mb-4">
-                        <h2 class="text-3xl font-bold text-brand-purple dark:text-brand-light leading-tight group-hover:scale-[1.02] transition-transform origin-left">${entry.word}</h2>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 dark:bg-purple-900/30 text-brand-purple dark:text-purple-300 border border-purple-100 dark:border-purple-800 uppercase tracking-wider">
-                            <i class="ph ph-tag-simple"></i> ${entry.part_of_speech}
-                        </span>
-                    </div>
-                    
-                    <div class="flex-grow">
-                        <ul class="space-y-3 mb-5">
-                            ${entry.meanings.map(m => `
-                                <li class="flex items-start gap-3 text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
-                                    <i class="ph ph-caret-right text-brand-purple dark:text-purple-400 mt-1.5 text-sm flex-shrink-0"></i>
-                                    <span>${m}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-
-                    ${entry.english_translation ? `
-                        <div class="mt-auto pt-5 border-t border-slate-200/60 dark:border-slate-700/60">
-                            <div class="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-1.5">
-                                <i class="ph ph-translate"></i> English
-                            </div>
-                            <p class="text-slate-700 dark:text-slate-300 font-medium">${entry.english_translation}</p>
-                        </div>
-                    ` : ''}
-                    
-                    ${entry.examples && entry.examples.length > 0 ? `
-                        <div class="mt-4 bg-slate-50/80 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700/50">
-                            <p class="text-sm text-slate-600 dark:text-slate-400 italic leading-relaxed">"${entry.examples[0]}"</p>
-                        </div>
-                    ` : ''}
+            <!-- Letter nav -->
+            <div class="mb-6">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">Browse by letter</p>
+                <div id="letterNav" class="flex flex-wrap gap-1.5">
+                    <!-- injected -->
                 </div>
-            `).join('');
+            </div>
+
+            <hr class="ruled border-t mb-6">
+
+            <!-- Links -->
+            <nav class="space-y-1 mt-auto">
+                <a href="https://github.com/InanXR/ProjectShobdo" target="_blank"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-600 dark:hover:text-brand-300 transition-colors font-medium">
+                    <i class="ph ph-github-logo text-lg"></i> GitHub Repository
+                </a>
+                <a href="dist/json/dictionary.min.json"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-600 dark:hover:text-brand-300 transition-colors font-medium">
+                    <i class="ph ph-database text-lg"></i> Download JSON
+                </a>
+                <a href="#"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-600 dark:hover:text-brand-300 transition-colors font-medium">
+                    <i class="ph ph-info text-lg"></i> About
+                </a>
+            </nav>
+
+            <!-- License tag -->
+            <div class="mt-6 pt-5 border-t ruled">
+                <p class="text-[10px] text-slate-400 dark:text-slate-600">© 2025 ProjectShobdo</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-600 mt-0.5">Open Source · CC-BY-SA 4.0</p>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- ══ MAIN ══════════════════════════════════════════════ -->
+    <main class="flex-1 min-w-0 flex flex-col">
+
+        <!-- Top bar (mobile) -->
+        <div class="lg:hidden sticky top-0 z-40 flex items-center gap-3 px-4 py-3 border-b ruled"
+             style="background:rgba(248,247,255,0.88);backdrop-filter:blur(20px)">
+            <button onclick="openSidebar()" class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-colors">
+                <i class="ph ph-list text-xl text-brand-600 dark:text-brand-400"></i>
+            </button>
+            <img src="assets/LOGO.png" alt="ProjectShobdo" class="h-7 object-contain dark:brightness-125">
+            <span class="font-bold text-brand-600 dark:text-brand-300 text-sm ml-1">ProjectShobdo</span>
+            <div class="ml-auto">
+                <button id="themeToggleMobile" class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-colors">
+                    <i class="ph ph-sun text-xl text-amber-500 dark:hidden"></i>
+                    <i class="ph ph-moon text-xl text-brand-400 hidden dark:block"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero -->
+        <div class="px-6 md:px-12 pt-12 pb-8 relative">
+
+            <!-- Desktop theme toggle -->
+            <button id="themeToggle" class="hidden lg:flex absolute top-8 right-10 w-10 h-10 items-center justify-center rounded-full border ruled hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-colors">
+                <i class="ph ph-sun text-lg text-amber-500 dark:hidden"></i>
+                <i class="ph ph-moon text-lg text-brand-400 hidden dark:block"></i>
+            </button>
+
+            <!-- Eyebrow + title -->
+            <div class="max-w-3xl">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="stat-pill">Open Source</span>
+                    <span class="stat-pill">Bengali · বাংলা</span>
+                </div>
+                <h1 class="font-serif text-5xl md:text-6xl lg:text-7xl font-normal text-brand-900 dark:text-brand-100 leading-[1.1] mb-3">
+                    শব্দভান্ডার
+                </h1>
+                <p class="text-slate-500 dark:text-slate-400 text-base md:text-lg max-w-lg">
+                    An open lexical corpus for the Bengali language — search definitions, translations, and examples.
+                </p>
+            </div>
+
+            <!-- Divider -->
+            <hr class="ruled border-t mt-8 mb-8">
+
+            <!-- Search -->
+            <div class="search-wrap rounded-2xl flex items-center gap-4 px-5 py-4 max-w-2xl">
+                <i class="ph ph-magnifying-glass text-2xl text-slate-400 dark:text-slate-500 flex-shrink-0"></i>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="শব্দ খুঁজুন… Search words or English"
+                    class="flex-1 bg-transparent text-lg text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none font-medium"
+                    disabled
+                >
+                <div id="loadingSpinner" class="text-brand-600 animate-spin flex-shrink-0">
+                    <i class="ph ph-spinner-gap text-xl"></i>
+                </div>
+                <button id="clearBtn" class="hidden flex-shrink-0 w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-700 items-center justify-center hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors">
+                    <i class="ph ph-x text-sm text-slate-500 dark:text-slate-400"></i>
+                </button>
+            </div>
+
+            <!-- Result count badge -->
+            <div id="resultMeta" class="mt-4 h-5 text-sm text-slate-400 dark:text-slate-500 font-medium"></div>
+
+        </div>
+
+        <!-- Results -->
+        <div class="flex-1 px-6 md:px-12 pb-16">
+
+            <!-- Grid -->
+            <div id="results" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+
+            <!-- Empty state -->
+            <div id="emptyState" class="hidden py-32 text-center animate-fade-up">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 mb-6 border border-brand-100 dark:border-brand-800">
+                    <i class="ph ph-magnifying-glass text-4xl"></i>
+                </div>
+                <h3 id="emptyTitle" class="text-2xl font-serif text-slate-700 dark:text-slate-200 mb-2">কোনো ফলাফল পাওয়া যায়নি</h3>
+                <p id="emptyDesc" class="text-slate-400 dark:text-slate-500">Try a different spelling or search in English</p>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+    /* ── Theme ─────────────────────────────────────────── */
+    const html = document.documentElement;
+
+    function applyTheme() {
+        const dark = localStorage.theme === 'dark' ||
+            (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        dark ? html.classList.add('dark') : html.classList.remove('dark');
+    }
+    applyTheme();
+
+    function toggleTheme() {
+        html.classList.toggle('dark');
+        localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+    }
+
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    document.getElementById('themeToggleMobile').addEventListener('click', toggleTheme);
+
+    /* ── Mobile sidebar ────────────────────────────────── */
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('active');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+
+    /* ── Dictionary ────────────────────────────────────── */
+    let dictionary = [];
+    const searchInput  = document.getElementById('searchInput');
+    const resultsDiv   = document.getElementById('results');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const emptyState   = document.getElementById('emptyState');
+    const emptyTitle   = document.getElementById('emptyTitle');
+    const emptyDesc    = document.getElementById('emptyDesc');
+    const resultMeta   = document.getElementById('resultMeta');
+    const clearBtn     = document.getElementById('clearBtn');
+
+    fetch('dist/json/dictionary.min.json')
+        .then(r => r.json())
+        .then(data => {
+            dictionary = data;
+            loadingSpinner.style.display = 'none';
+            searchInput.disabled = false;
+            searchInput.focus();
+            buildSidebarStats();
+            buildLetterNav();
+            showRandomWords();
+        })
+        .catch(err => {
+            console.error(err);
+            loadingSpinner.style.display = 'none';
+            searchInput.placeholder = 'Error loading dictionary.';
+        });
+
+    searchInput.addEventListener('input', e => {
+        const q = e.target.value.trim().toLowerCase();
+        clearBtn.style.display = q ? 'flex' : 'none';
+        if (!q) { showRandomWords(); return; }
+        const res = dictionary.filter(entry => {
+            const w   = entry.word.toLowerCase();
+            const eng = (entry.english_translation || '').toLowerCase();
+            return w.includes(q) || eng.includes(q);
+        }).slice(0, 48);
+        renderResults(res, `${res.length} result${res.length !== 1 ? 's' : ''} for "${e.target.value.trim()}"`);
+    });
+
+    clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearBtn.style.display = 'none';
+        showRandomWords();
+        searchInput.focus();
+    });
+
+    function renderResults(entries, metaText) {
+        resultMeta.textContent = metaText || '';
+
+        if (entries.length === 0) {
+            resultsDiv.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            emptyTitle.textContent = 'কোনো ফলাফল পাওয়া যায়নি';
+            emptyDesc.textContent  = 'No results found — try a different word';
+            return;
         }
 
-        function showRandomWords() {
-            if (dictionary.length === 0) return;
-            const random = [];
-            for(let i=0; i<9; i++) {
-                random.push(dictionary[Math.floor(Math.random() * dictionary.length)]);
-            }
-            renderResults(random);
-        }
-    </script>
+        emptyState.classList.add('hidden');
+
+        resultsDiv.innerHTML = entries.map((entry, i) => `
+            <article class="word-card rounded-2xl p-6 flex flex-col animate-fade-up"
+                     style="animation-delay:${Math.min(i * 40, 400)}ms; opacity:0; animation-fill-mode:forwards;">
+
+                <!-- Header -->
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <h2 class="font-serif text-[2rem] leading-tight text-brand-700 dark:text-brand-200">
+                        ${entry.word}
+                    </h2>
+                    <span class="pos-badge mt-1.5 whitespace-nowrap">${entry.part_of_speech}</span>
+                </div>
+
+                <!-- Meanings -->
+                <ul class="flex-grow space-y-2 mb-5">
+                    ${entry.meanings.map(m => `
+                        <li class="meaning-item flex items-start text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+                            <span>${m}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+
+                <!-- English translation -->
+                ${entry.english_translation ? `
+                    <div class="border-t ruled pt-4 mt-auto">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1 flex items-center gap-1.5">
+                            <i class="ph ph-translate"></i> English
+                        </p>
+                        <p class="text-slate-700 dark:text-slate-200 font-medium text-sm">${entry.english_translation}</p>
+                    </div>
+                ` : ''}
+
+                <!-- Example -->
+                ${entry.examples && entry.examples.length > 0 ? `
+                    <div class="mt-4 rounded-xl px-4 py-3 bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800/40">
+                        <p class="text-sm text-slate-600 dark:text-slate-400 italic leading-relaxed">
+                            "${entry.examples[0]}"
+                        </p>
+                    </div>
+                ` : ''}
+
+            </article>
+        `).join('');
+    }
+
+    function showRandomWords() {
+        if (!dictionary.length) return;
+        const random = Array.from({ length: 12 }, () =>
+            dictionary[Math.floor(Math.random() * dictionary.length)]
+        );
+        resultMeta.textContent = 'Showing random entries — start typing to search';
+        renderResults(random);
+    }
+
+    /* ── Sidebar stats ─────────────────────────────────── */
+    function buildSidebarStats() {
+        const container = document.getElementById('sidebarStats');
+        const posMap = {};
+        dictionary.forEach(e => {
+            posMap[e.part_of_speech] = (posMap[e.part_of_speech] || 0) + 1;
+        });
+        const topPos = Object.entries(posMap).sort((a,b) => b[1]-a[1]).slice(0,4);
+
+        container.innerHTML = `
+            <div class="mb-3">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">Corpus</p>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-2xl font-bold text-brand-600 dark:text-brand-300">${dictionary.length.toLocaleString()}</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">words</span>
+                </div>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">Parts of speech</p>
+                <div class="space-y-1.5">
+                    ${topPos.map(([pos, count]) => `
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-600 dark:text-slate-400 capitalize">${pos}</span>
+                            <span class="text-xs font-semibold text-brand-600 dark:text-brand-300">${count.toLocaleString()}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    /* ── Letter nav ────────────────────────────────────── */
+    function buildLetterNav() {
+        const letters = new Set(dictionary.map(e => e.word.charAt(0)));
+        const container = document.getElementById('letterNav');
+        container.innerHTML = [...letters].slice(0, 30).map(l => `
+            <button onclick="filterByLetter('${l}')"
+                class="w-7 h-7 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400
+                       hover:bg-brand-100 dark:hover:bg-brand-900/40 hover:text-brand-600 dark:hover:text-brand-300
+                       transition-colors border border-transparent hover:border-brand-200 dark:hover:border-brand-800">
+                ${l}
+            </button>
+        `).join('');
+    }
+
+    function filterByLetter(letter) {
+        searchInput.value = letter;
+        clearBtn.style.display = 'flex';
+        const res = dictionary.filter(e => e.word.startsWith(letter)).slice(0, 48);
+        renderResults(res, `${res.length} words starting with "${letter}"`);
+        closeSidebar();
+    }
+</script>
+
 </body>
 </html>
