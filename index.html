@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProjectShobdo | Open Bengali Dictionary</title>
     <link rel="icon" type="image/x-icon" href="assets/Favicon.ico">
-
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -19,9 +19,43 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans:  ['"Hind Siliguri"', 'sans-serif'],
-                        serif: ['"Libre Baskerville"', 'Georgia', 'serif'],
-                        mono:  ['"DM Mono"', 'monospace'],
+                        sans: ['"Hind Siliguri"', '"DM Sans"', 'sans-serif'],
+                        serif: ['"DM Serif Display"', 'serif'],
+                        display: ['"DM Serif Display"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50:  '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%,100%': { transform: 'translate(0,0) scale(1)' },
+                            '33%':     { transform: 'translate(30px,-50px) scale(1.1)' },
+                            '66%':     { transform: 'translate(-20px,20px) scale(0.9)' },
+                        },
+                        fadeUp: {
+                            '0%':   { opacity: '0', transform: 'translateY(16px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        shimmer: {
+                            '0%':   { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        }
+                    },
+                    animation: {
+                        blob:     'blob 9s infinite',
+                        'fade-up':'fadeUp 0.45s ease-out forwards',
+                        shimmer:  'shimmer 1.5s infinite linear',
                     }
                 }
             }
@@ -29,580 +63,464 @@
     </script>
 
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; }
-
-        body {
-            background: #f7f5f2;
-            color: #1a1625;
-            min-height: 100vh;
-            font-family: 'Hind Siliguri', sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-        .dark body { background: #100e1a; color: #e8e3f4; }
+        /* Base */
+        * { box-sizing: border-box; }
 
         ::selection { background: #7c3aed; color: #fff; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #7c3aed44; border-radius: 99px; }
 
-        /* Shell */
-        .shell {
-            display: grid;
-            grid-template-columns: 230px 1fr;
-            min-height: 100vh;
+        body {
+            background-color: #faf9ff;
+            color: #1e1b4b;
         }
-        @media (max-width: 860px) {
-            .shell { grid-template-columns: 1fr; }
-            .sidebar { display: none; }
-            .mobile-bar { display: flex !important; }
+        .dark body,
+        .dark {
+            background-color: #0b0a14;
+            color: #ede9fe;
         }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #7c3aed33; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #7c3aed77; }
+
+        /* Aurora bg */
+        .aurora-wrap { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
+        .aurora-blob {
+            position: absolute;
+            border-radius: 9999px;
+            filter: blur(80px);
+            mix-blend-mode: multiply;
+            opacity: 0.15;
+        }
+        .dark .aurora-blob { mix-blend-mode: screen; opacity: 0.08; }
 
         /* Sidebar */
         .sidebar {
-            border-right: 1px solid #ddd8d0;
-            padding: 1.75rem 1.375rem;
-            display: flex;
-            flex-direction: column;
+            width: 280px;
+            min-height: 100vh;
             position: sticky;
             top: 0;
             height: 100vh;
             overflow-y: auto;
-        }
-        .dark .sidebar { border-color: #221e36; }
-
-        .logo-block { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.75rem; }
-        .logo-block img { height: 26px; object-fit: contain; }
-        .logo-name {
-            font-family: 'Libre Baskerville', serif;
-            font-size: 0.8125rem;
-            font-weight: 700;
-            color: #7c3aed;
-            line-height: 1.1;
-        }
-        .logo-sub {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.52rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: #8a82a0;
-            margin-top: 2px;
-        }
-
-        .rule { border: none; border-top: 1px solid #ddd8d0; margin: 1rem 0; }
-        .dark .rule { border-color: #221e36; }
-
-        .sidebar-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.575rem;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: #8a82a0;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-row { display: flex; justify-content: space-between; align-items: baseline; padding: 0.15rem 0; }
-        .stat-name { font-size: 0.8rem; color: #3d3552; text-transform: capitalize; }
-        .dark .stat-name { color: #b8b0d0; }
-        .stat-val { font-family: 'DM Mono', monospace; font-size: 0.725rem; color: #7c3aed; }
-        .dark .stat-val { color: #a78bfa; }
-
-        .letter-grid { display: flex; flex-wrap: wrap; gap: 3px; }
-        .letter-btn {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.65rem;
-            width: 24px; height: 24px;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid #ddd8d0;
-            border-radius: 3px;
-            color: #3d3552;
-            background: transparent;
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s, border-color 0.15s;
-        }
-        .dark .letter-btn { border-color: #2a2540; color: #b8b0d0; }
-        .letter-btn:hover { background: #7c3aed; border-color: #7c3aed; color: #fff; }
-
-        .sidebar-links { margin-top: auto; display: flex; flex-direction: column; gap: 0.125rem; }
-        .sidebar-link {
-            display: flex; align-items: center; gap: 0.5rem;
-            font-size: 0.8rem;
-            color: #8a82a0;
-            text-decoration: none;
-            padding: 0.3rem 0.25rem;
-            border-radius: 4px;
-            transition: color 0.15s;
-        }
-        .sidebar-link:hover { color: #7c3aed; }
-
-        .sidebar-foot {
-            margin-top: 1.25rem;
-            padding-top: 0.875rem;
-            border-top: 1px solid #ddd8d0;
-        }
-        .dark .sidebar-foot { border-color: #221e36; }
-        .sidebar-foot p { font-family: 'DM Mono', monospace; font-size: 0.575rem; color: #c8c3d8; line-height: 1.9; }
-        .dark .sidebar-foot p { color: #3a3255; }
-
-        /* Mobile top bar */
-        .mobile-bar {
-            display: none;
-            align-items: center;
-            gap: 0.625rem;
-            padding: 0.625rem 1rem;
-            border-bottom: 1px solid #ddd8d0;
-            background: #f7f5f2;
-        }
-        .dark .mobile-bar { background: #100e1a; border-color: #221e36; }
-        .mobile-bar img { height: 22px; object-fit: contain; }
-        .mobile-bar-name { font-family: 'Libre Baskerville', serif; font-size: 0.8125rem; font-weight: 700; color: #7c3aed; }
-
-        /* Right column */
-        .right-col { display: flex; flex-direction: column; min-width: 0; }
-
-        /* Topbar */
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            background: #f7f5f2;
-            border-bottom: 1px solid #ddd8d0;
-        }
-        .dark .topbar { background: #100e1a; border-color: #221e36; }
-
-        .search-row {
-            display: flex;
-            align-items: center;
-            gap: 0.625rem;
-            padding: 0.8rem 1.75rem;
-        }
-        @media (max-width: 600px) { .search-row { padding: 0.75rem 1rem; } }
-
-        .search-icon { font-size: 1rem; color: #8a82a0; flex-shrink: 0; }
-        .search-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            font-family: 'Hind Siliguri', sans-serif;
-            font-size: 1rem;
-            color: #1a1625;
-            font-weight: 500;
-            min-width: 0;
-        }
-        .dark .search-input { color: #e8e3f4; }
-        .search-input::placeholder { color: #8a82a0; font-weight: 400; }
-
-        .meta-strip {
-            padding: 0.3rem 1.75rem;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.65rem;
-            color: #8a82a0;
-            letter-spacing: 0.02em;
-            border-bottom: 1px solid #ddd8d0;
-            min-height: 26px;
-            display: flex;
-            align-items: center;
-        }
-        .dark .meta-strip { border-color: #221e36; }
-        @media (max-width: 600px) { .meta-strip { padding-left: 1rem; padding-right: 1rem; } }
-
-        .icon-btn {
-            background: transparent;
-            border: 1px solid #ddd8d0;
-            border-radius: 5px;
-            width: 30px; height: 30px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            color: #8a82a0;
             flex-shrink: 0;
-            transition: border-color 0.15s, color 0.15s;
-            font-size: 0.875rem;
+            border-right: 1px solid rgba(124,58,237,0.08);
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
         }
-        .dark .icon-btn { border-color: #2a2540; }
-        .icon-btn:hover { border-color: #7c3aed; color: #7c3aed; }
-
-        /* Content */
-        .content { padding: 0 1.75rem 4rem; flex: 1; }
-        @media (max-width: 600px) { .content { padding: 0 1rem 3rem; } }
-
-        /* Word grid — newspaper columns */
-        .word-grid {
-            column-count: 2;
-            column-gap: 0;
-            column-fill: balance;
+        .dark .sidebar {
+            background: rgba(15,13,28,0.7);
+            border-right-color: rgba(124,58,237,0.12);
         }
-        @media (max-width: 680px) { .word-grid { column-count: 1; } }
 
-        /* Word card */
+        /* Search bar */
+        .search-wrap {
+            background: #ffffff;
+            border: 1px solid rgba(124,58,237,0.15);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.03);
+        }
+        .dark .search-wrap {
+            background: rgba(20,18,36,0.9);
+            border-color: rgba(124,58,237,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .search-wrap:focus-within {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+        }
+
+        /* Word card - Minimal Redesign */
         .word-card {
-            break-inside: avoid;
-            padding: 1.25rem 0;
-            border-bottom: 1px solid #ddd8d0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.375rem;
-            opacity: 0;
-            position: relative;
-            transition: background 0.15s;
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.01);
+            transition: transform 0.3s cubic-bezier(.4,0,.2,1),
+                        box-shadow 0.3s;
         }
-        .dark .word-card { border-color: #221e36; }
-        .word-card.show { animation: fadeSlide 0.3s ease-out forwards; }
-
-        /* Column gutters: odd cards get right padding, even get left padding + left border */
-        .word-grid .word-card:nth-child(odd)  { padding-right: 1.5rem; }
-        .word-grid .word-card:nth-child(even) { padding-left: 1.5rem; border-left: 1px solid #ddd8d0; }
-        .dark .word-grid .word-card:nth-child(even) { border-left-color: #221e36; }
-
-        /* Hover accent bar */
-        .word-card::after {
-            content: '';
-            position: absolute;
-            top: 0; bottom: 0;
-            width: 2px;
-            background: #7c3aed;
-            opacity: 0;
-            transition: opacity 0.15s;
+        .dark .word-card {
+            background: rgba(22,19,40,0.6);
+            border-color: rgba(255,255,255,0.03);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        .word-grid .word-card:nth-child(odd)::after  { left: -1px; }
-        .word-grid .word-card:nth-child(even)::after { left: -1px; }
-        .word-card:hover::after { opacity: 1; }
-
-        /* Card content */
-        .card-head { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
-
-        .card-word {
-            font-family: 'Libre Baskerville', serif;
-            font-size: 1.3125rem;
-            font-weight: 700;
-            color: #1a1625;
-            line-height: 1.2;
-            letter-spacing: -0.015em;
+        .word-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(124,58,237,0.06);
+            border-color: rgba(124,58,237,0.15);
         }
-        .dark .card-word { color: #e8e3f4; }
-
-        .card-pos {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.58rem;
-            letter-spacing: 0.09em;
-            text-transform: uppercase;
-            color: #7c3aed;
-            border: 1px solid #c4b5fd60;
-            border-radius: 3px;
-            padding: 2px 5px;
-            line-height: 1.5;
-            white-space: nowrap;
-            align-self: center;
-        }
-        .dark .card-pos { color: #a78bfa; border-color: #4c1d9560; }
-
-        .card-meanings { list-style: none; padding: 0; }
-        .card-meanings li {
-            font-size: 0.9rem;
-            color: #3d3552;
-            line-height: 1.55;
-            padding-left: 0.8rem;
-            position: relative;
-        }
-        .dark .card-meanings li { color: #b8b0d0; }
-        .card-meanings li::before { content: '–'; position: absolute; left: 0; color: #8a82a0; }
-
-        .card-eng {
-            font-size: 0.78rem;
-            color: #8a82a0;
-            font-style: italic;
-            margin-top: 0.125rem;
+        .dark .word-card:hover { 
+            box-shadow: 0 12px 24px rgba(0,0,0,0.4); 
+            border-color: rgba(124,58,237,0.25);
         }
 
-        .card-ex {
-            font-size: 0.775rem;
-            color: #8a82a0;
-            line-height: 1.6;
-            border-left: 2px solid #ddd8d0;
-            padding-left: 0.5rem;
-            margin-top: 0.125rem;
-        }
-        .dark .card-ex { border-color: #2a2540; color: #6a6382; }
+        /* Divider */
+        .ruled { border-color: rgba(124,58,237,0.1); }
+        .dark .ruled { border-color: rgba(124,58,237,0.15); }
 
-        /* Skeleton */
-        @keyframes shimmer {
-            0%   { background-position: -500px 0; }
-            100% { background-position: 500px 0; }
+        /* Skeleton shimmer */
+        .skeleton {
+            background: linear-gradient(90deg, #ede9fe 25%, #c4b5fd55 50%, #ede9fe 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 6px;
         }
-        .skel {
-            border-radius: 3px;
-            background: linear-gradient(90deg, #eeeae3 30%, #ddd8d0 50%, #eeeae3 70%);
-            background-size: 1000px 100%;
-            animation: shimmer 1.2s infinite linear;
-        }
-        .dark .skel {
-            background: linear-gradient(90deg, #1e1a30 30%, #2a2540 50%, #1e1a30 70%);
-            background-size: 1000px 100%;
+        .dark .skeleton {
+            background: linear-gradient(90deg, #1e1a38 25%, #2d2550 50%, #1e1a38 75%);
+            background-size: 200% 100%;
         }
 
-        /* Empty state */
-        .empty-state {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 5rem 2rem;
-            text-align: center;
-            gap: 0.625rem;
-        }
-        .empty-state.show { display: flex; }
-        .empty-icon {
-            width: 42px; height: 42px;
-            border: 1px solid #ddd8d0;
-            border-radius: 7px;
-            display: flex; align-items: center; justify-content: center;
-            color: #8a82a0;
-            margin-bottom: 0.375rem;
-        }
-        .dark .empty-icon { border-color: #2a2540; }
-        .empty-state h3 { font-family: 'Libre Baskerville', serif; font-size: 1rem; color: #3d3552; }
-        .dark .empty-state h3 { color: #b8b0d0; }
-        .empty-state p { font-size: 0.825rem; color: #8a82a0; }
+        /* Fade in */
+        .opacity-0 { opacity: 0; }
 
-        @keyframes fadeSlide {
-            from { opacity: 0; transform: translateY(7px); }
-            to   { opacity: 1; transform: translateY(0); }
+        /* Mobile sidebar overlay */
+        #sidebarOverlay { display:none; }
+        #sidebarOverlay.active { display:block; }
+
+        @media (max-width: 1023px) {
+            .sidebar {
+                position: fixed;
+                left: -320px;
+                top: 0; bottom: 0;
+                z-index: 60;
+                transition: left 0.3s cubic-bezier(.4,0,.2,1);
+                width: 280px;
+                min-height: unset;
+                height: 100%;
+            }
+            .sidebar.open { left: 0; }
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .spin { animation: spin 0.75s linear infinite; }
     </style>
 </head>
 
-<body>
-<div class="shell">
+<body class="transition-colors duration-300 dark:bg-[#0b0a14] bg-[#faf9ff]">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="logo-block">
-            <img src="assets/LOGO.png" alt="ProjectShobdo">
-            <div>
-                <div class="logo-name">ProjectShobdo</div>
-                <div class="logo-sub">Bengali Lexicon</div>
+<div class="aurora-wrap">
+    <div class="aurora-blob w-[600px] h-[600px] bg-purple-400 dark:bg-purple-900 top-[-10%] left-[-5%] animate-blob"></div>
+    <div class="aurora-blob w-[500px] h-[500px] bg-blue-300 dark:bg-blue-900 top-[20%] right-[-8%] animate-blob" style="animation-delay:3s"></div>
+    <div class="aurora-blob w-[400px] h-[400px] bg-fuchsia-300 dark:bg-fuchsia-900 bottom-[-10%] left-[35%] animate-blob" style="animation-delay:6s"></div>
+</div>
+
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-50 backdrop-blur-sm lg:hidden" onclick="closeSidebar()"></div>
+
+<div class="flex min-h-screen relative">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="flex flex-col h-full px-6 py-8">
+
+            <div class="flex items-center gap-3 mb-8">
+                <img src="assets/LOGO.png" alt="ProjectShobdo" class="h-10 object-contain dark:brightness-125">
+                <div>
+                    <div class="font-bold text-brand-600 dark:text-brand-300 text-sm leading-none">ProjectShobdo</div>
+                    <div class="text-[10px] uppercase tracking-widest text-slate-400 mt-0.5">Bengali Lexicon</div>
+                </div>
             </div>
-        </div>
 
-        <hr class="rule">
-        <div id="sidebarStats">
-            <div class="sidebar-label">Corpus</div>
-            <div class="skel" style="height:13px;width:55%;margin-bottom:5px;"></div>
-            <div class="skel" style="height:11px;width:40%;margin-bottom:5px;"></div>
-            <div class="skel" style="height:11px;width:48%;"></div>
-        </div>
+            <hr class="ruled border-t mb-6">
 
-        <hr class="rule">
-        <div id="sidebarNav">
-            <div class="sidebar-label">Browse</div>
-            <div class="letter-grid" id="letterGrid"></div>
-        </div>
+            <div id="sidebarStats" class="space-y-3 mb-8">
+                <div class="skeleton h-4 w-3/4"></div>
+                <div class="skeleton h-4 w-1/2"></div>
+            </div>
 
-        <hr class="rule">
-        <nav class="sidebar-links">
-            <a href="https://github.com/InanXR/ProjectShobdo" target="_blank" class="sidebar-link">
-                <i class="ph ph-github-logo"></i> GitHub
-            </a>
-            <a href="dist/json/dictionary.min.json" class="sidebar-link">
-                <i class="ph ph-database"></i> JSON Data
-            </a>
-        </nav>
+            <div class="mb-6">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">Browse by letter</p>
+                <div id="letterNav" class="flex flex-wrap gap-1.5">
+                    </div>
+            </div>
 
-        <div class="sidebar-foot">
-            <p>© 2025 ProjectShobdo</p>
-            <p>Apache License, Version 2.0</p>
+            <hr class="ruled border-t mb-6">
+
+            <nav class="space-y-1 mt-auto">
+                <a href="https://github.com/InanXR/ProjectShobdo" target="_blank"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-600 dark:hover:text-brand-300 transition-colors font-medium">
+                    <i class="ph ph-github-logo text-lg"></i> GitHub Repository
+                </a>
+                <a href="dist/json/dictionary.min.json"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-600 dark:hover:text-brand-300 transition-colors font-medium">
+                    <i class="ph ph-database text-lg"></i> Download JSON
+                </a>
+                <a href="#"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-600 dark:hover:text-brand-300 transition-colors font-medium">
+                    <i class="ph ph-info text-lg"></i> About
+                </a>
+            </nav>
+
+            <div class="mt-6 pt-5 border-t ruled">
+                <p class="text-[10px] text-slate-400 dark:text-slate-600">© 2026 ProjectShobdo</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-600 mt-0.5">Open Source · Apache License, Version 2.0</p>
+            </div>
+
         </div>
     </aside>
 
-    <!-- RIGHT COLUMN -->
-    <div class="right-col">
+    <main class="flex-1 min-w-0 flex flex-col relative">
 
-        <!-- Mobile bar -->
-        <div class="mobile-bar">
-            <img src="assets/LOGO.png" alt="">
-            <span class="mobile-bar-name">ProjectShobdo</span>
-            <button class="icon-btn" id="themeBtnMobile" style="margin-left:auto;">
-                <i class="ph ph-sun" id="sunM"></i><i class="ph ph-moon" id="moonM" style="display:none;"></i>
+        <div class="lg:hidden sticky top-0 z-40 flex items-center gap-3 px-4 py-3 border-b ruled"
+             style="background:rgba(250,249,255,0.88);backdrop-filter:blur(20px)">
+            <button onclick="openSidebar()" class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-colors">
+                <i class="ph ph-list text-xl text-brand-600 dark:text-brand-400"></i>
             </button>
-        </div>
-
-        <!-- Sticky topbar -->
-        <div class="topbar">
-            <div class="search-row">
-                <i class="ph ph-magnifying-glass search-icon"></i>
-                <input id="searchInput" type="text" class="search-input"
-                       placeholder="শব্দ খুঁজুন…  search Bengali or English"
-                       autocomplete="off" spellcheck="false" disabled>
-                <i class="ph ph-spinner-gap spin" id="loadingSpinner" style="color:#7c3aed;font-size:1rem;flex-shrink:0;"></i>
-                <button id="clearBtn" class="icon-btn" style="display:none;" title="Clear">
-                    <i class="ph ph-x"></i>
-                </button>
-                <button class="icon-btn" id="themeBtn" title="Toggle theme">
-                    <i class="ph ph-sun" id="sunD"></i><i class="ph ph-moon" id="moonD" style="display:none;"></i>
+            <img src="assets/LOGO.png" alt="ProjectShobdo" class="h-7 object-contain dark:brightness-125">
+            <span class="font-bold text-brand-600 dark:text-brand-300 text-sm ml-1">ProjectShobdo</span>
+            <div class="ml-auto">
+                <button id="themeToggleMobile" class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-colors">
+                    <i class="ph ph-sun text-xl text-amber-500 dark:hidden"></i>
+                    <i class="ph ph-moon text-xl text-brand-400 hidden dark:block"></i>
                 </button>
             </div>
-            <div class="meta-strip"><span id="metaText"></span></div>
         </div>
 
-        <!-- Cards -->
-        <div class="content">
-            <div class="word-grid" id="results"></div>
-            <div class="empty-state" id="emptyState">
-                <div class="empty-icon"><i class="ph ph-magnifying-glass" style="font-size:1.125rem;"></i></div>
-                <h3 id="emptyTitle">কোনো ফলাফল পাওয়া যায়নি</h3>
-                <p id="emptyDesc">No results — try a different spelling</p>
+        <div class="px-6 md:px-12 pt-12 pb-6 relative">
+            
+            <button id="themeToggle" class="hidden lg:flex absolute top-8 right-10 w-10 h-10 items-center justify-center rounded-full border ruled hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-colors">
+                <i class="ph ph-sun text-lg text-amber-500 dark:hidden"></i>
+                <i class="ph ph-moon text-lg text-brand-400 hidden dark:block"></i>
+            </button>
+
+            <div class="max-w-3xl">
+                <h1 class="font-serif text-5xl md:text-6xl font-normal text-brand-900 dark:text-brand-100 leading-[1.1] mb-3">
+                    শব্দভান্ডার
+                </h1>
+                <p class="text-slate-500 dark:text-slate-400 text-base md:text-lg max-w-lg">
+                    An open lexical corpus for the Bengali language, search definitions, translations, and examples.
+                </p>
             </div>
         </div>
-    </div>
+
+        <div class="sticky top-0 z-30 px-6 md:px-12 py-4" style="background: linear-gradient(180deg, var(--tw-bg-opacity) 0%, transparent 100%);">
+            <div class="absolute inset-0 bg-[#faf9ff]/80 dark:bg-[#0b0a14]/80 backdrop-blur-md z-[-1]"></div>
+            
+            <div class="search-wrap rounded-2xl flex items-center gap-4 px-5 py-4 w-full">
+                <i class="ph ph-magnifying-glass text-2xl text-slate-400 dark:text-slate-500 flex-shrink-0"></i>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="শব্দ খুঁজুন... Search words or English"
+                    class="flex-1 bg-transparent text-lg text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none font-medium"
+                    disabled
+                >
+                <div id="loadingSpinner" class="text-brand-600 animate-spin flex-shrink-0">
+                    <i class="ph ph-spinner-gap text-xl"></i>
+                </div>
+                <button id="clearBtn" class="hidden flex-shrink-0 w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors">
+                    <i class="ph ph-x text-sm text-slate-500 dark:text-slate-400"></i>
+                </button>
+            </div>
+            
+            <div id="resultMeta" class="mt-3 h-5 text-[13px] text-slate-400 dark:text-slate-500 font-medium px-2"></div>
+        </div>
+
+        <div class="flex-1 px-6 md:px-12 pb-16 pt-2">
+
+            <div id="results" class="columns-1 sm:columns-2 xl:columns-3 gap-6 space-y-6"></div>
+
+            <div id="emptyState" class="hidden py-32 text-center animate-fade-up">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 mb-6 border border-brand-100 dark:border-brand-800">
+                    <i class="ph ph-magnifying-glass text-4xl"></i>
+                </div>
+                <h3 id="emptyTitle" class="text-2xl font-serif text-slate-700 dark:text-slate-200 mb-2">কোনো ফলাফল পাওয়া যায়নি</h3>
+                <p id="emptyDesc" class="text-slate-400 dark:text-slate-500">Try a different spelling or search in English</p>
+            </div>
+
+        </div>
+
+    </main>
 
 </div>
 
 <script>
     /* Theme */
     const html = document.documentElement;
-    const icons = {
-        sun: [document.getElementById('sunD'), document.getElementById('sunM')],
-        moon:[document.getElementById('moonD'),document.getElementById('moonM')],
-    };
 
     function applyTheme() {
         const dark = localStorage.theme === 'dark' ||
             (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        html.classList.toggle('dark', dark);
-        icons.sun.forEach(el  => el.style.display = dark ? 'none' : 'block');
-        icons.moon.forEach(el => el.style.display = dark ? 'block' : 'none');
+        dark ? html.classList.add('dark') : html.classList.remove('dark');
     }
     applyTheme();
 
     function toggleTheme() {
         html.classList.toggle('dark');
         localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
-        applyTheme();
     }
-    document.getElementById('themeBtn').addEventListener('click', toggleTheme);
-    document.getElementById('themeBtnMobile').addEventListener('click', toggleTheme);
 
-    /* Data */
-    let dict = [];
-    const searchEl  = document.getElementById('searchInput');
-    const resultsEl = document.getElementById('results');
-    const spinner   = document.getElementById('loadingSpinner');
-    const emptyEl   = document.getElementById('emptyState');
-    const metaEl    = document.getElementById('metaText');
-    const clearBtn  = document.getElementById('clearBtn');
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    document.getElementById('themeToggleMobile').addEventListener('click', toggleTheme);
+
+    /* Mobile sidebar */
+    function openSidebar() {
+        document.getElementById('sidebar').classList.add('open');
+        document.getElementById('sidebarOverlay').classList.add('active');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+
+    /* Dictionary */
+    let dictionary = [];
+    const searchInput  = document.getElementById('searchInput');
+    const resultsDiv   = document.getElementById('results');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const emptyState   = document.getElementById('emptyState');
+    const emptyTitle   = document.getElementById('emptyTitle');
+    const emptyDesc    = document.getElementById('emptyDesc');
+    const resultMeta   = document.getElementById('resultMeta');
+    const clearBtn     = document.getElementById('clearBtn');
 
     fetch('dist/json/dictionary.min.json')
         .then(r => r.json())
         .then(data => {
-            dict = data;
-            spinner.style.display = 'none';
-            searchEl.disabled = false;
-            searchEl.focus();
-            buildStats();
-            buildLetters();
-            showRandom();
+            dictionary = data;
+            loadingSpinner.style.display = 'none';
+            searchInput.disabled = false;
+            searchInput.focus();
+            buildSidebarStats();
+            buildLetterNav();
+            showRandomWords();
         })
-        .catch(() => {
-            spinner.style.display = 'none';
-            searchEl.placeholder = 'Failed to load dictionary.';
+        .catch(err => {
+            console.error(err);
+            loadingSpinner.style.display = 'none';
+            searchInput.placeholder = 'Error loading dictionary.';
         });
 
-    searchEl.addEventListener('input', e => {
+    searchInput.addEventListener('input', e => {
         const q = e.target.value.trim().toLowerCase();
         clearBtn.style.display = q ? 'flex' : 'none';
-        if (!q) { showRandom(); return; }
-        const res = dict.filter(en =>
-            en.word.toLowerCase().includes(q) ||
-            (en.english_translation || '').toLowerCase().includes(q)
-        ).slice(0, 60);
-        render(res, `${res.length} result${res.length !== 1 ? 's' : ''} for "${e.target.value.trim()}"`);
+        if (!q) { showRandomWords(); return; }
+        const res = dictionary.filter(entry => {
+            const w   = entry.word.toLowerCase();
+            const eng = (entry.english_translation || '').toLowerCase();
+            return w.includes(q) || eng.includes(q);
+        }).slice(0, 48);
+        renderResults(res, `${res.length} result${res.length !== 1 ? 's' : ''} for "${e.target.value.trim()}"`);
     });
 
     clearBtn.addEventListener('click', () => {
-        searchEl.value = '';
+        searchInput.value = '';
         clearBtn.style.display = 'none';
-        searchEl.focus();
-        showRandom();
+        showRandomWords();
+        searchInput.focus();
     });
 
-    function render(entries, meta) {
-        metaEl.textContent = meta || '';
-        if (!entries.length) {
-            resultsEl.innerHTML = '';
-            emptyEl.classList.add('show');
+    function renderResults(entries, metaText) {
+        resultMeta.textContent = metaText || '';
+
+        if (entries.length === 0) {
+            resultsDiv.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            emptyTitle.textContent = 'কোনো ফলাফল পাওয়া যায়নি';
+            emptyDesc.textContent  = 'No results found, try a different word';
             return;
         }
-        emptyEl.classList.remove('show');
-        resultsEl.innerHTML = entries.map((en, i) => `
-            <div class="word-card" style="animation-delay:${Math.min(i*28,400)}ms">
-                <div class="card-head">
-                    <span class="card-word">${en.word}</span>
-                    <span class="card-pos">${en.part_of_speech}</span>
+
+        emptyState.classList.add('hidden');
+
+        resultsDiv.innerHTML = entries.map((entry, i) => `
+            <article class="word-card break-inside-avoid rounded-3xl p-6 flex flex-col animate-fade-up"
+                     style="animation-delay:${Math.min(i * 30, 400)}ms; opacity:0; animation-fill-mode:forwards;">
+
+                <div class="flex items-baseline justify-between mb-5">
+                    <h2 class="font-serif text-3xl md:text-4xl leading-none text-slate-900 dark:text-slate-100">
+                        ${entry.word}
+                    </h2>
+                    <span class="text-[10px] font-mono tracking-widest text-brand-500 dark:text-brand-400 uppercase px-2 py-1 bg-brand-50 dark:bg-brand-500/10 rounded border border-brand-100 dark:border-brand-500/20 whitespace-nowrap">
+                        ${entry.part_of_speech}
+                    </span>
                 </div>
-                <ul class="card-meanings">
-                    ${en.meanings.map(m => `<li>${m}</li>`).join('')}
-                </ul>
-                ${en.english_translation ? `<div class="card-eng">${en.english_translation}</div>` : ''}
-                ${en.examples?.length ? `<div class="card-ex">${en.examples[0]}</div>` : ''}
-            </div>
+
+                <div class="space-y-3 mb-2">
+                    ${entry.meanings.map((m, idx) => `
+                        <div class="flex gap-3 text-slate-600 dark:text-slate-300">
+                            <span class="text-brand-300 dark:text-brand-600 font-mono text-sm pt-0.5 select-none">${idx + 1}.</span>
+                            <p class="leading-relaxed text-[15px]">${m}</p>
+                        </div>
+                    `).join('')}
+                </div>
+
+                ${entry.english_translation ? `
+                    <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/50">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Eng</p>
+                        <p class="text-slate-800 dark:text-slate-200 font-medium text-sm">${entry.english_translation}</p>
+                    </div>
+                ` : ''}
+
+                ${entry.examples && entry.examples.length > 0 ? `
+                    <div class="mt-4 pl-4 border-l-2 border-brand-200 dark:border-brand-800/60">
+                        <p class="text-sm text-slate-500 dark:text-slate-400 italic leading-relaxed">
+                            "${entry.examples[0]}"
+                        </p>
+                    </div>
+                ` : ''}
+
+            </article>
         `).join('');
-
-        const cards = resultsEl.querySelectorAll('.word-card');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('show');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.05 });
-
-        cards.forEach((c, i) => {
-            setTimeout(() => observer.observe(c), Math.min(i * 28, 400));
-        });
     }
 
-    function showRandom() {
-        if (!dict.length) return;
-        const sample = Array.from({ length: 24 }, () => dict[Math.floor(Math.random() * dict.length)]);
-        render(sample, 'Random entries — start typing to search');
+    function showRandomWords() {
+        if (!dictionary.length) return;
+        const random = Array.from({ length: 12 }, () =>
+            dictionary[Math.floor(Math.random() * dictionary.length)]
+        );
+        resultMeta.textContent = 'Showing random entries, start typing to search';
+        renderResults(random);
     }
 
-    function buildStats() {
+    /* Sidebar stats */
+    function buildSidebarStats() {
+        const container = document.getElementById('sidebarStats');
         const posMap = {};
-        dict.forEach(e => { posMap[e.part_of_speech] = (posMap[e.part_of_speech] || 0) + 1; });
-        const top = Object.entries(posMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
-        document.getElementById('sidebarStats').innerHTML = `
-            <div class="sidebar-label">Corpus</div>
-            <div class="stat-row">
-                <span class="stat-name">Total words</span>
-                <span class="stat-val">${dict.length.toLocaleString()}</span>
-            </div>
-            <hr class="rule" style="margin:0.6rem 0;">
-            <div class="sidebar-label">Parts of speech</div>
-            ${top.map(([p,n]) => `
-                <div class="stat-row">
-                    <span class="stat-name">${p}</span>
-                    <span class="stat-val">${n.toLocaleString()}</span>
+        dictionary.forEach(e => {
+            posMap[e.part_of_speech] = (posMap[e.part_of_speech] || 0) + 1;
+        });
+        const topPos = Object.entries(posMap).sort((a,b) => b[1]-a[1]).slice(0,4);
+
+        container.innerHTML = `
+            <div class="mb-3">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">Corpus</p>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-2xl font-bold text-brand-600 dark:text-brand-300">${dictionary.length.toLocaleString()}</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">words</span>
                 </div>
-            `).join('')}
+            </div>
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">Parts of speech</p>
+                <div class="space-y-1.5">
+                    ${topPos.map(([pos, count]) => `
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-600 dark:text-slate-400 capitalize">${pos}</span>
+                            <span class="text-xs font-semibold text-brand-600 dark:text-brand-300">${count.toLocaleString()}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
         `;
     }
 
-    function buildLetters() {
-        const letters = [...new Set(dict.map(e => e.word.charAt(0)))].slice(0,40);
-        document.getElementById('letterGrid').innerHTML = letters.map(l =>
-            `<button class="letter-btn" onclick="filterL('${l}')">${l}</button>`
-        ).join('');
+    /* Letter nav */
+    function buildLetterNav() {
+        const letters = new Set(dictionary.map(e => e.word.charAt(0)));
+        const container = document.getElementById('letterNav');
+        container.innerHTML = [...letters].slice(0, 30).map(l => `
+            <button onclick="filterByLetter('${l}')"
+                class="w-7 h-7 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400
+                       hover:bg-brand-100 dark:hover:bg-brand-900/40 hover:text-brand-600 dark:hover:text-brand-300
+                       transition-colors border border-transparent hover:border-brand-200 dark:hover:border-brand-800">
+                ${l}
+            </button>
+        `).join('');
     }
 
-    function filterL(l) {
-        searchEl.value = l;
+    function filterByLetter(letter) {
+        searchInput.value = letter;
         clearBtn.style.display = 'flex';
-        const res = dict.filter(e => e.word.startsWith(l)).slice(0,60);
-        render(res, `${res.length} words starting with "${l}"`);
+        const res = dictionary.filter(e => e.word.startsWith(letter)).slice(0, 48);
+        renderResults(res, `${res.length} words starting with "${letter}"`);
+        closeSidebar();
     }
 </script>
+
 </body>
 </html>
