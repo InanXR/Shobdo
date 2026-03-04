@@ -1,526 +1,751 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="bn" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ProjectShobdo | Open Bengali Dictionary</title>
-    <link rel="icon" type="image/x-icon" href="assets/Favicon.ico">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+    <link rel="icon" type="image/x-icon" href="assets/Favicon.ico" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Hind Siliguri"', '"DM Sans"', 'sans-serif'],
-                        serif: ['"DM Serif Display"', 'serif'],
-                        display: ['"DM Serif Display"', 'serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50:  '#f5f3ff',
-                            100: '#ede9fe',
-                            200: '#ddd6fe',
-                            300: '#c4b5fd',
-                            400: '#a78bfa',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            800: '#5b21b6',
-                            900: '#4c1d95',
-                        }
-                    },
-                    keyframes: {
-                        blob: {
-                            '0%,100%': { transform: 'translate(0,0) scale(1)' },
-                            '33%':     { transform: 'translate(30px,-50px) scale(1.1)' },
-                            '66%':     { transform: 'translate(-20px,20px) scale(0.9)' },
-                        },
-                        fadeUp: {
-                            '0%':   { opacity: '0', transform: 'translateY(16px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        shimmer: {
-                            '0%':   { backgroundPosition: '-200% 0' },
-                            '100%': { backgroundPosition: '200% 0' },
-                        }
-                    },
-                    animation: {
-                        blob:     'blob 9s infinite',
-                        'fade-up':'fadeUp 0.45s ease-out forwards',
-                        shimmer:  'shimmer 1.5s infinite linear',
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              bengali: ['"Hind Siliguri"', "sans-serif"],
+              serif: ['"DM Serif Display"', "serif"],
+              body: ['"Space Grotesk"', '"DM Sans"', "sans-serif"],
+            },
+            colors: {
+              ink: {
+                50: "#fafaf9",
+                100: "#f5f5f4",
+                200: "#e7e5e4",
+                300: "#d6d3d1",
+                400: "#a8a29e",
+                500: "#78716c",
+                600: "#57534e",
+                700: "#44403c",
+                800: "#292524",
+                900: "#1c1917",
+                950: "#0c0a09",
+              },
+              accent: {
+                DEFAULT: "#6d28d9",
+                light: "#8b5cf6",
+                muted: "#a78bfa",
+                subtle: "#ddd6fe",
+                ghost: "#f5f3ff",
+              },
+            },
+            keyframes: {
+              fadeIn: {
+                "0%": { opacity: "0", transform: "translateY(8px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+              shimmer: {
+                "0%": { backgroundPosition: "-200% 0" },
+                "100%": { backgroundPosition: "200% 0" },
+              },
+            },
+            animation: {
+              enter: "fadeIn 0.35s ease-out forwards",
+              shimmer: "shimmer 1.5s infinite linear",
+            },
+          },
+        },
+      };
     </script>
 
     <style>
-        /* Base */
-        * { box-sizing: border-box; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-        ::selection { background: #7c3aed; color: #fff; }
+      ::selection {
+        background: #6d28d9;
+        color: #fff;
+      }
 
-        body {
-            background-color: #faf9ff;
-            color: #1e1b4b;
+      body {
+        font-family: "Space Grotesk", "DM Sans", sans-serif;
+        background: #fafaf9;
+        color: #1c1917;
+      }
+      .dark body,
+      .dark {
+        background: #0f0e17;
+        color: #e7e5e4;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d6d3d1;
+        border-radius: 99px;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #292524;
+      }
+
+      /* ── Sidebar ──────────────────────────────────── */
+      .sidebar {
+        width: 260px;
+        min-height: 100vh;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        flex-shrink: 0;
+        border-right: 1px solid #e7e5e4;
+        background: #fafaf9;
+      }
+      .dark .sidebar {
+        background: #0f0e17;
+        border-right-color: #1c1917;
+      }
+
+      /* ── Sticky search ────────────────────────────── */
+      .search-sticky {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        padding: 1.25rem 0;
+        background: rgba(250, 250, 249, 0.92);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+      .dark .search-sticky {
+        background: rgba(15, 14, 23, 0.92);
+      }
+
+      .search-bar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1.25rem;
+        border-radius: 0.75rem;
+        border: 1.5px solid #e7e5e4;
+        background: #fff;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .dark .search-bar {
+        background: #1c1917;
+        border-color: #292524;
+      }
+      .search-bar:focus-within {
+        border-color: #6d28d9;
+        box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.08);
+      }
+      .dark .search-bar:focus-within {
+        box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.15);
+      }
+
+      /* ── Word entry ───────────────────────────────── */
+      .word-entry {
+        position: relative;
+        padding: 1.5rem 0 1.5rem 1.5rem;
+        border-left: 2px solid transparent;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+      .word-entry:hover {
+        border-left-color: #6d28d9;
+        background: rgba(109, 40, 217, 0.015);
+      }
+      .dark .word-entry:hover {
+        background: rgba(109, 40, 217, 0.04);
+      }
+
+      .word-entry + .word-entry {
+        border-top: 1px solid #f5f5f4;
+      }
+      .dark .word-entry + .word-entry {
+        border-top-color: #1c1917;
+      }
+
+      /* ── Masonry columns ──────────────────────────── */
+      .dict-grid {
+        column-count: 1;
+        column-gap: 2rem;
+      }
+      @media (min-width: 768px) {
+        .dict-grid {
+          column-count: 2;
         }
-        .dark body,
-        .dark {
-            background-color: #0b0a14;
-            color: #ede9fe;
+      }
+      @media (min-width: 1280px) {
+        .dict-grid {
+          column-count: 3;
         }
+      }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #7c3aed33; border-radius: 99px; }
-        ::-webkit-scrollbar-thumb:hover { background: #7c3aed77; }
+      .dict-column-item {
+        break-inside: avoid;
+        margin-bottom: 0;
+      }
 
-        /* Aurora bg */
-        .aurora-wrap { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
-        .aurora-blob {
-            position: absolute;
-            border-radius: 9999px;
-            filter: blur(80px);
-            mix-blend-mode: multiply;
-            opacity: 0.15;
-        }
-        .dark .aurora-blob { mix-blend-mode: screen; opacity: 0.08; }
+      /* ── POS tag ──────────────────────────────────── */
+      .pos-tag {
+        font-family: "Space Grotesk", monospace;
+        font-size: 0.6rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #6d28d9;
+        opacity: 0.7;
+      }
+      .dark .pos-tag {
+        color: #a78bfa;
+      }
 
-        /* Sidebar */
+      /* ── Skeleton ─────────────────────────────────── */
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          #f5f5f4 25%,
+          #e7e5e4 50%,
+          #f5f5f4 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite linear;
+        border-radius: 4px;
+      }
+      .dark .skeleton {
+        background: linear-gradient(
+          90deg,
+          #1c1917 25%,
+          #292524 50%,
+          #1c1917 75%
+        );
+        background-size: 200% 100%;
+      }
+
+      /* ── Stat ─────────────────────────────────────── */
+      .stat-label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #a8a29e;
+      }
+      .dark .stat-label {
+        color: #57534e;
+      }
+
+      /* ── Letter button ────────────────────────────── */
+      .letter-btn {
+        width: 1.75rem;
+        height: 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #78716c;
+        transition: all 0.15s ease;
+      }
+      .letter-btn:hover {
+        background: #f5f3ff;
+        color: #6d28d9;
+      }
+      .dark .letter-btn {
+        color: #57534e;
+      }
+      .dark .letter-btn:hover {
+        background: rgba(109, 40, 217, 0.1);
+        color: #a78bfa;
+      }
+
+      /* ── Nav link ─────────────────────────────────── */
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.8125rem;
+        color: #78716c;
+        transition: all 0.15s ease;
+      }
+      .nav-link:hover {
+        background: #f5f3ff;
+        color: #6d28d9;
+      }
+      .dark .nav-link {
+        color: #57534e;
+      }
+      .dark .nav-link:hover {
+        background: rgba(109, 40, 217, 0.08);
+        color: #a78bfa;
+      }
+
+      /* mobile sidebar */
+      #sidebarOverlay {
+        display: none;
+      }
+      #sidebarOverlay.active {
+        display: block;
+      }
+
+      @media (max-width: 1023px) {
         .sidebar {
-            width: 280px;
-            min-height: 100vh;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-            flex-shrink: 0;
-            border-right: 1px solid rgba(124,58,237,0.08);
-            background: rgba(255,255,255,0.6);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+          position: fixed;
+          left: -300px;
+          top: 0;
+          bottom: 0;
+          z-index: 60;
+          transition: left 0.25s ease;
+          width: 260px;
+          min-height: unset;
+          height: 100%;
         }
-        .dark .sidebar {
-            background: rgba(15,13,28,0.7);
-            border-right-color: rgba(124,58,237,0.12);
+        .sidebar.open {
+          left: 0;
         }
 
-        /* Search bar */
-        .search-wrap {
-            background: #ffffff;
-            border: 1px solid rgba(124,58,237,0.15);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(124,58,237,0.03);
+        .search-sticky {
+          padding: 1rem 0;
         }
-        .dark .search-wrap {
-            background: rgba(20,18,36,0.9);
-            border-color: rgba(124,58,237,0.2);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        .search-wrap:focus-within {
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
-        }
-
-        /* Word card - Minimal Redesign */
-        .word-card {
-            background: #ffffff;
-            border: 1px solid rgba(0,0,0,0.04);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.01);
-            transition: transform 0.3s cubic-bezier(.4,0,.2,1),
-                        box-shadow 0.3s;
-        }
-        .dark .word-card {
-            background: rgba(22,19,40,0.6);
-            border-color: rgba(255,255,255,0.03);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        .word-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 24px rgba(124,58,237,0.06);
-            border-color: rgba(124,58,237,0.15);
-        }
-        .dark .word-card:hover { 
-            box-shadow: 0 12px 24px rgba(0,0,0,0.4); 
-            border-color: rgba(124,58,237,0.25);
-        }
-
-        /* Divider */
-        .ruled { border-color: rgba(124,58,237,0.1); }
-        .dark .ruled { border-color: rgba(124,58,237,0.15); }
-
-        /* Skeleton shimmer */
-        .skeleton {
-            background: linear-gradient(90deg, #ede9fe 25%, #c4b5fd55 50%, #ede9fe 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite linear;
-            border-radius: 6px;
-        }
-        .dark .skeleton {
-            background: linear-gradient(90deg, #1e1a38 25%, #2d2550 50%, #1e1a38 75%);
-            background-size: 200% 100%;
-        }
-
-        /* Fade in */
-        .opacity-0 { opacity: 0; }
-
-        /* Mobile sidebar overlay */
-        #sidebarOverlay { display:none; }
-        #sidebarOverlay.active { display:block; }
-
-        @media (max-width: 1023px) {
-            .sidebar {
-                position: fixed;
-                left: -320px;
-                top: 0; bottom: 0;
-                z-index: 60;
-                transition: left 0.3s cubic-bezier(.4,0,.2,1);
-                width: 280px;
-                min-height: unset;
-                height: 100%;
-            }
-            .sidebar.open { left: 0; }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body class="transition-colors duration-300 dark:bg-[#0b0a14] bg-[#faf9ff]">
+  <body class="transition-colors duration-200">
+    <!-- Mobile overlay -->
+    <div
+      id="sidebarOverlay"
+      class="fixed inset-0 bg-black/30 z-50 backdrop-blur-sm lg:hidden"
+      onclick="closeSidebar()"
+    ></div>
 
-<div class="aurora-wrap">
-    <div class="aurora-blob w-[600px] h-[600px] bg-purple-400 dark:bg-purple-900 top-[-10%] left-[-5%] animate-blob"></div>
-    <div class="aurora-blob w-[500px] h-[500px] bg-blue-300 dark:bg-blue-900 top-[20%] right-[-8%] animate-blob" style="animation-delay:3s"></div>
-    <div class="aurora-blob w-[400px] h-[400px] bg-fuchsia-300 dark:bg-fuchsia-900 bottom-[-10%] left-[35%] animate-blob" style="animation-delay:6s"></div>
-</div>
-
-<div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-50 backdrop-blur-sm lg:hidden" onclick="closeSidebar()"></div>
-
-<div class="flex min-h-screen relative">
-
-    <aside class="sidebar" id="sidebar">
-        <div class="flex flex-col h-full px-6 py-8">
-
-            <div class="flex items-center gap-3 mb-8">
-                <img src="assets/LOGO.png" alt="ProjectShobdo" class="h-10 object-contain dark:brightness-125">
-                <div>
-                    <div class="font-bold text-brand-600 dark:text-brand-300 text-sm leading-none">ProjectShobdo</div>
-                    <div class="text-[10px] uppercase tracking-widest text-slate-400 mt-0.5">Bengali Lexicon</div>
-                </div>
+    <div class="flex min-h-screen">
+      <!-- ═══ SIDEBAR ═══════════════════════════════════════ -->
+      <aside class="sidebar" id="sidebar">
+        <div class="flex flex-col h-full px-5 py-7">
+          <!-- Brand -->
+          <div class="flex items-center gap-2.5 mb-7">
+            <img
+              src="assets/LOGO.png"
+              alt="ProjectShobdo"
+              class="h-8 object-contain dark:brightness-125"
+            />
+            <div>
+              <div
+                class="text-sm font-semibold text-ink-900 dark:text-ink-100 leading-none"
+              >
+                ProjectShobdo
+              </div>
+              <div class="stat-label mt-0.5">বাংলা অভিধান</div>
             </div>
+          </div>
 
-            <hr class="ruled border-t mb-6">
+          <div class="h-px bg-ink-200 dark:bg-ink-800 mb-6"></div>
 
-            <div id="sidebarStats" class="space-y-3 mb-8">
-                <div class="skeleton h-4 w-3/4"></div>
-                <div class="skeleton h-4 w-1/2"></div>
-            </div>
+          <!-- Stats -->
+          <div id="sidebarStats" class="space-y-3 mb-7">
+            <div class="skeleton h-3 w-3/4"></div>
+            <div class="skeleton h-3 w-1/2"></div>
+          </div>
 
-            <div class="mb-6">
-                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">Browse by letter</p>
-                <div id="letterNav" class="flex flex-wrap gap-1.5">
-                    </div>
-            </div>
+          <!-- Letters -->
+          <div class="mb-6">
+            <p class="stat-label mb-2.5">Letters</p>
+            <div id="letterNav" class="flex flex-wrap gap-1"></div>
+          </div>
 
-            <hr class="ruled border-t mb-6">
+          <div class="h-px bg-ink-200 dark:bg-ink-800 mb-6"></div>
 
-            <nav class="space-y-1 mt-auto">
-                <a href="https://github.com/InanXR/ProjectShobdo" target="_blank"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-600 dark:hover:text-brand-300 transition-colors font-medium">
-                    <i class="ph ph-github-logo text-lg"></i> GitHub Repository
-                </a>
-                <a href="dist/json/dictionary.min.json"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-600 dark:hover:text-brand-300 transition-colors font-medium">
-                    <i class="ph ph-database text-lg"></i> Download JSON
-                </a>
-                <a href="#"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-brand-900/30 hover:text-brand-600 dark:hover:text-brand-300 transition-colors font-medium">
-                    <i class="ph ph-info text-lg"></i> About
-                </a>
-            </nav>
+          <!-- Nav -->
+          <nav class="space-y-0.5 mt-auto">
+            <a
+              href="https://github.com/InanXR/ProjectShobdo"
+              target="_blank"
+              class="nav-link"
+            >
+              <i class="ph ph-github-logo text-base"></i> GitHub
+            </a>
+            <a href="dist/json/dictionary.min.json" class="nav-link">
+              <i class="ph ph-download-simple text-base"></i> Download JSON
+            </a>
+            <a href="#" class="nav-link">
+              <i class="ph ph-info text-base"></i> About
+            </a>
+          </nav>
 
-            <div class="mt-6 pt-5 border-t ruled">
-                <p class="text-[10px] text-slate-400 dark:text-slate-600">© 2026 ProjectShobdo</p>
-                <p class="text-[10px] text-slate-400 dark:text-slate-600 mt-0.5">Open Source · Apache License, Version 2.0</p>
-            </div>
-
+          <!-- License -->
+          <div class="mt-6 pt-4 border-t border-ink-200 dark:border-ink-800">
+            <p class="text-[10px] text-ink-400 dark:text-ink-600">
+              © 2025 ProjectShobdo
+            </p>
+            <p class="text-[10px] text-ink-400 dark:text-ink-600 mt-0.5">
+              Apache License, Version 2.0
+            </p>
+          </div>
         </div>
-    </aside>
+      </aside>
 
-    <main class="flex-1 min-w-0 flex flex-col relative">
+      <!-- ═══ MAIN ══════════════════════════════════════════ -->
+      <main class="flex-1 min-w-0">
+        <!-- Mobile top bar -->
+        <div
+          class="lg:hidden sticky top-0 z-40 flex items-center gap-3 px-4 py-2.5 border-b border-ink-200 dark:border-ink-800"
+          style="
+            background: rgba(250, 250, 249, 0.9);
+            backdrop-filter: blur(16px);
+          "
+        >
+          <button
+            onclick="openSidebar()"
+            class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-ink-100 dark:hover:bg-ink-800 transition-colors"
+          >
+            <i class="ph ph-list text-lg text-ink-700 dark:text-ink-300"></i>
+          </button>
+          <span class="text-sm font-semibold text-ink-900 dark:text-ink-100"
+            >ProjectShobdo</span
+          >
+          <button
+            id="themeToggleMobile"
+            class="ml-auto w-8 h-8 rounded-lg flex items-center justify-center hover:bg-ink-100 dark:hover:bg-ink-800 transition-colors"
+          >
+            <i class="ph ph-sun text-base text-amber-500 dark:hidden"></i>
+            <i
+              class="ph ph-moon text-base text-accent-muted hidden dark:block"
+            ></i>
+          </button>
+        </div>
 
-        <div class="lg:hidden sticky top-0 z-40 flex items-center gap-3 px-4 py-3 border-b ruled"
-             style="background:rgba(250,249,255,0.88);backdrop-filter:blur(20px)">
-            <button onclick="openSidebar()" class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-colors">
-                <i class="ph ph-list text-xl text-brand-600 dark:text-brand-400"></i>
+        <div class="px-6 md:px-10 lg:px-12">
+          <!-- Hero -->
+          <header class="pt-10 md:pt-14 pb-2 relative">
+            <!-- Theme toggle desktop -->
+            <button
+              id="themeToggle"
+              class="hidden lg:flex absolute top-10 right-0 w-9 h-9 items-center justify-center rounded-lg border border-ink-200 dark:border-ink-800 hover:bg-ink-100 dark:hover:bg-ink-800 transition-colors"
+            >
+              <i class="ph ph-sun text-sm text-amber-500 dark:hidden"></i>
+              <i
+                class="ph ph-moon text-sm text-accent-muted hidden dark:block"
+              ></i>
             </button>
-            <img src="assets/LOGO.png" alt="ProjectShobdo" class="h-7 object-contain dark:brightness-125">
-            <span class="font-bold text-brand-600 dark:text-brand-300 text-sm ml-1">ProjectShobdo</span>
-            <div class="ml-auto">
-                <button id="themeToggleMobile" class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-colors">
-                    <i class="ph ph-sun text-xl text-amber-500 dark:hidden"></i>
-                    <i class="ph ph-moon text-xl text-brand-400 hidden dark:block"></i>
-                </button>
+
+            <p class="stat-label mb-3">Open Bengali Dictionary</p>
+            <h1
+              class="font-serif text-4xl md:text-5xl lg:text-6xl text-ink-900 dark:text-ink-100 leading-[1.1] mb-3"
+            >
+              শব্দভান্ডার
+            </h1>
+            <p
+              class="text-ink-400 dark:text-ink-500 text-sm md:text-base max-w-md leading-relaxed"
+            >
+              Search definitions, translations, and examples from an open
+              lexical corpus for Bengali.
+            </p>
+          </header>
+
+          <!-- Sticky search -->
+          <div class="search-sticky">
+            <div class="search-bar">
+              <i
+                class="ph ph-magnifying-glass text-lg text-ink-400 dark:text-ink-500 flex-shrink-0"
+              ></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="শব্দ খুঁজুন… Search words or English"
+                class="flex-1 bg-transparent text-sm text-ink-900 dark:text-ink-100 placeholder-ink-400 dark:placeholder-ink-600 focus:outline-none font-medium font-bengali"
+                disabled
+              />
+              <div
+                id="loadingSpinner"
+                class="text-accent animate-spin flex-shrink-0"
+              >
+                <i class="ph ph-spinner-gap text-base"></i>
+              </div>
+              <button
+                id="clearBtn"
+                class="hidden flex-shrink-0 w-6 h-6 rounded-md bg-ink-100 dark:bg-ink-800 items-center justify-center hover:bg-accent-ghost dark:hover:bg-accent/10 transition-colors"
+              >
+                <i class="ph ph-x text-xs text-ink-500 dark:text-ink-400"></i>
+              </button>
             </div>
-        </div>
+            <div
+              id="resultMeta"
+              class="mt-2 h-4 text-xs text-ink-400 dark:text-ink-600 font-medium"
+            ></div>
+          </div>
 
-        <div class="px-6 md:px-12 pt-12 pb-6 relative">
-            
-            <button id="themeToggle" class="hidden lg:flex absolute top-8 right-10 w-10 h-10 items-center justify-center rounded-full border ruled hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-colors">
-                <i class="ph ph-sun text-lg text-amber-500 dark:hidden"></i>
-                <i class="ph ph-moon text-lg text-brand-400 hidden dark:block"></i>
-            </button>
+          <!-- Results -->
+          <section class="pb-16">
+            <div id="results" class="dict-grid"></div>
 
-            <div class="max-w-3xl">
-                <h1 class="font-serif text-5xl md:text-6xl font-normal text-brand-900 dark:text-brand-100 leading-[1.1] mb-3">
-                    শব্দভান্ডার
-                </h1>
-                <p class="text-slate-500 dark:text-slate-400 text-base md:text-lg max-w-lg">
-                    An open lexical corpus for the Bengali language, search definitions, translations, and examples.
-                </p>
+            <!-- Empty state -->
+            <div id="emptyState" class="hidden py-24 text-center animate-enter">
+              <i
+                class="ph ph-magnifying-glass text-3xl text-ink-300 dark:text-ink-600 mb-4 inline-block"
+              ></i>
+              <h3
+                id="emptyTitle"
+                class="text-lg font-serif text-ink-600 dark:text-ink-300 mb-1"
+              >
+                কোনো ফলাফল পাওয়া যায়নি
+              </h3>
+              <p id="emptyDesc" class="text-sm text-ink-400 dark:text-ink-600">
+                Try a different spelling or search in English
+              </p>
             </div>
+          </section>
         </div>
+      </main>
+    </div>
 
-        <div class="sticky top-0 z-30 px-6 md:px-12 py-4" style="background: linear-gradient(180deg, var(--tw-bg-opacity) 0%, transparent 100%);">
-            <div class="absolute inset-0 bg-[#faf9ff]/80 dark:bg-[#0b0a14]/80 backdrop-blur-md z-[-1]"></div>
-            
-            <div class="search-wrap rounded-2xl flex items-center gap-4 px-5 py-4 w-full">
-                <i class="ph ph-magnifying-glass text-2xl text-slate-400 dark:text-slate-500 flex-shrink-0"></i>
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="শব্দ খুঁজুন... Search words or English"
-                    class="flex-1 bg-transparent text-lg text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none font-medium"
-                    disabled
-                >
-                <div id="loadingSpinner" class="text-brand-600 animate-spin flex-shrink-0">
-                    <i class="ph ph-spinner-gap text-xl"></i>
-                </div>
-                <button id="clearBtn" class="hidden flex-shrink-0 w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors">
-                    <i class="ph ph-x text-sm text-slate-500 dark:text-slate-400"></i>
-                </button>
-            </div>
-            
-            <div id="resultMeta" class="mt-3 h-5 text-[13px] text-slate-400 dark:text-slate-500 font-medium px-2"></div>
-        </div>
+    <script>
+      /* ── Theme ─────────────────────────────────────────── */
+      const html = document.documentElement;
 
-        <div class="flex-1 px-6 md:px-12 pb-16 pt-2">
+      function applyTheme() {
+        const dark =
+          localStorage.theme === "dark" ||
+          (!("theme" in localStorage) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        dark ? html.classList.add("dark") : html.classList.remove("dark");
+      }
+      applyTheme();
 
-            <div id="results" class="columns-1 sm:columns-2 xl:columns-3 gap-6 space-y-6"></div>
+      function toggleTheme() {
+        html.classList.toggle("dark");
+        localStorage.theme = html.classList.contains("dark") ? "dark" : "light";
+      }
 
-            <div id="emptyState" class="hidden py-32 text-center animate-fade-up">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 mb-6 border border-brand-100 dark:border-brand-800">
-                    <i class="ph ph-magnifying-glass text-4xl"></i>
-                </div>
-                <h3 id="emptyTitle" class="text-2xl font-serif text-slate-700 dark:text-slate-200 mb-2">কোনো ফলাফল পাওয়া যায়নি</h3>
-                <p id="emptyDesc" class="text-slate-400 dark:text-slate-500">Try a different spelling or search in English</p>
-            </div>
+      document
+        .getElementById("themeToggle")
+        .addEventListener("click", toggleTheme);
+      document
+        .getElementById("themeToggleMobile")
+        .addEventListener("click", toggleTheme);
 
-        </div>
+      /* ── Mobile sidebar ────────────────────────────────── */
+      function openSidebar() {
+        document.getElementById("sidebar").classList.add("open");
+        document.getElementById("sidebarOverlay").classList.add("active");
+      }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebarOverlay").classList.remove("active");
+      }
 
-    </main>
+      /* ── Dictionary ────────────────────────────────────── */
+      let dictionary = [];
+      const searchInput = document.getElementById("searchInput");
+      const resultsDiv = document.getElementById("results");
+      const loadingSpinner = document.getElementById("loadingSpinner");
+      const emptyState = document.getElementById("emptyState");
+      const emptyTitle = document.getElementById("emptyTitle");
+      const emptyDesc = document.getElementById("emptyDesc");
+      const resultMeta = document.getElementById("resultMeta");
+      const clearBtn = document.getElementById("clearBtn");
 
-</div>
-
-<script>
-    /* Theme */
-    const html = document.documentElement;
-
-    function applyTheme() {
-        const dark = localStorage.theme === 'dark' ||
-            (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        dark ? html.classList.add('dark') : html.classList.remove('dark');
-    }
-    applyTheme();
-
-    function toggleTheme() {
-        html.classList.toggle('dark');
-        localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
-    }
-
-    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-    document.getElementById('themeToggleMobile').addEventListener('click', toggleTheme);
-
-    /* Mobile sidebar */
-    function openSidebar() {
-        document.getElementById('sidebar').classList.add('open');
-        document.getElementById('sidebarOverlay').classList.add('active');
-    }
-    function closeSidebar() {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('sidebarOverlay').classList.remove('active');
-    }
-
-    /* Dictionary */
-    let dictionary = [];
-    const searchInput  = document.getElementById('searchInput');
-    const resultsDiv   = document.getElementById('results');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const emptyState   = document.getElementById('emptyState');
-    const emptyTitle   = document.getElementById('emptyTitle');
-    const emptyDesc    = document.getElementById('emptyDesc');
-    const resultMeta   = document.getElementById('resultMeta');
-    const clearBtn     = document.getElementById('clearBtn');
-
-    fetch('dist/json/dictionary.min.json')
-        .then(r => r.json())
-        .then(data => {
-            dictionary = data;
-            loadingSpinner.style.display = 'none';
-            searchInput.disabled = false;
-            searchInput.focus();
-            buildSidebarStats();
-            buildLetterNav();
-            showRandomWords();
+      fetch("dist/json/dictionary.min.json")
+        .then((r) => r.json())
+        .then((data) => {
+          dictionary = data;
+          loadingSpinner.style.display = "none";
+          searchInput.disabled = false;
+          searchInput.focus();
+          buildSidebarStats();
+          buildLetterNav();
+          showRandomWords();
         })
-        .catch(err => {
-            console.error(err);
-            loadingSpinner.style.display = 'none';
-            searchInput.placeholder = 'Error loading dictionary.';
+        .catch(() => {
+          loadingSpinner.style.display = "none";
+          searchInput.placeholder = "Error loading dictionary.";
         });
 
-    searchInput.addEventListener('input', e => {
+      searchInput.addEventListener("input", (e) => {
         const q = e.target.value.trim().toLowerCase();
-        clearBtn.style.display = q ? 'flex' : 'none';
-        if (!q) { showRandomWords(); return; }
-        const res = dictionary.filter(entry => {
-            const w   = entry.word.toLowerCase();
-            const eng = (entry.english_translation || '').toLowerCase();
-            return w.includes(q) || eng.includes(q);
-        }).slice(0, 48);
-        renderResults(res, `${res.length} result${res.length !== 1 ? 's' : ''} for "${e.target.value.trim()}"`);
-    });
+        clearBtn.style.display = q ? "flex" : "none";
+        if (!q) {
+          showRandomWords();
+          return;
+        }
 
-    clearBtn.addEventListener('click', () => {
-        searchInput.value = '';
-        clearBtn.style.display = 'none';
+        const res = dictionary
+          .filter((entry) => {
+            const w = entry.word.toLowerCase();
+            const eng = (entry.english_translation || "").toLowerCase();
+            return w.includes(q) || eng.includes(q);
+          })
+          .slice(0, 60);
+
+        renderResults(
+          res,
+          `${res.length} result${res.length !== 1 ? "s" : ""} for "${e.target.value.trim()}"`,
+        );
+      });
+
+      clearBtn.addEventListener("click", () => {
+        searchInput.value = "";
+        clearBtn.style.display = "none";
         showRandomWords();
         searchInput.focus();
-    });
+      });
 
-    function renderResults(entries, metaText) {
-        resultMeta.textContent = metaText || '';
+      function renderResults(entries, metaText) {
+        resultMeta.textContent = metaText || "";
 
         if (entries.length === 0) {
-            resultsDiv.innerHTML = '';
-            emptyState.classList.remove('hidden');
-            emptyTitle.textContent = 'কোনো ফলাফল পাওয়া যায়নি';
-            emptyDesc.textContent  = 'No results found, try a different word';
-            return;
+          resultsDiv.innerHTML = "";
+          emptyState.classList.remove("hidden");
+          return;
         }
 
-        emptyState.classList.add('hidden');
+        emptyState.classList.add("hidden");
 
-        resultsDiv.innerHTML = entries.map((entry, i) => `
-            <article class="word-card break-inside-avoid rounded-3xl p-6 flex flex-col animate-fade-up"
-                     style="animation-delay:${Math.min(i * 30, 400)}ms; opacity:0; animation-fill-mode:forwards;">
+        resultsDiv.innerHTML = entries
+          .map((entry, i) => {
+            const meanings = entry.meanings
+              .map(
+                (m) =>
+                  `<span class="text-ink-600 dark:text-ink-300 text-sm leading-relaxed">${m}</span>`,
+              )
+              .join(
+                '<span class="text-ink-300 dark:text-ink-600 mx-1.5">·</span>',
+              );
 
-                <div class="flex items-baseline justify-between mb-5">
-                    <h2 class="font-serif text-3xl md:text-4xl leading-none text-slate-900 dark:text-slate-100">
-                        ${entry.word}
-                    </h2>
-                    <span class="text-[10px] font-mono tracking-widest text-brand-500 dark:text-brand-400 uppercase px-2 py-1 bg-brand-50 dark:bg-brand-500/10 rounded border border-brand-100 dark:border-brand-500/20 whitespace-nowrap">
-                        ${entry.part_of_speech}
-                    </span>
-                </div>
+            const delay = Math.min(i * 25, 350);
 
-                <div class="space-y-3 mb-2">
-                    ${entry.meanings.map((m, idx) => `
-                        <div class="flex gap-3 text-slate-600 dark:text-slate-300">
-                            <span class="text-brand-300 dark:text-brand-600 font-mono text-sm pt-0.5 select-none">${idx + 1}.</span>
-                            <p class="leading-relaxed text-[15px]">${m}</p>
-                        </div>
-                    `).join('')}
-                </div>
+            return `
+            <div class="dict-column-item">
+                <div class="word-entry animate-enter" style="animation-delay:${delay}ms; opacity:0;">
 
-                ${entry.english_translation ? `
-                    <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/50">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Eng</p>
-                        <p class="text-slate-800 dark:text-slate-200 font-medium text-sm">${entry.english_translation}</p>
+                    <div class="flex items-baseline gap-3 mb-1">
+                        <h2 class="font-bengali text-xl font-semibold text-ink-900 dark:text-ink-100 leading-tight">${entry.word}</h2>
+                        <span class="pos-tag">${entry.part_of_speech}</span>
                     </div>
-                ` : ''}
 
-                ${entry.examples && entry.examples.length > 0 ? `
-                    <div class="mt-4 pl-4 border-l-2 border-brand-200 dark:border-brand-800/60">
-                        <p class="text-sm text-slate-500 dark:text-slate-400 italic leading-relaxed">
-                            "${entry.examples[0]}"
+                    <div class="flex flex-wrap items-baseline gap-x-0 mb-2 font-bengali">
+                        ${meanings}
+                    </div>
+
+                    ${
+                      entry.english_translation
+                        ? `
+                        <p class="text-xs text-ink-400 dark:text-ink-500 mt-1.5 flex items-center gap-1.5 font-body">
+                            <i class="ph ph-translate text-[0.65rem]"></i>
+                            ${entry.english_translation}
                         </p>
-                    </div>
-                ` : ''}
+                    `
+                        : ""
+                    }
 
-            </article>
-        `).join('');
-    }
+                    ${
+                      entry.examples && entry.examples.length > 0
+                        ? `
+                        <p class="text-xs italic text-ink-400 dark:text-ink-500 mt-2 pl-3 border-l border-ink-200 dark:border-ink-700 leading-relaxed font-bengali">
+                            ${entry.examples[0]}
+                        </p>
+                    `
+                        : ""
+                    }
 
-    function showRandomWords() {
+                </div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      function showRandomWords() {
         if (!dictionary.length) return;
-        const random = Array.from({ length: 12 }, () =>
-            dictionary[Math.floor(Math.random() * dictionary.length)]
+        const random = Array.from(
+          { length: 18 },
+          () => dictionary[Math.floor(Math.random() * dictionary.length)],
         );
-        resultMeta.textContent = 'Showing random entries, start typing to search';
+        resultMeta.textContent = "Random entries — start typing to search";
         renderResults(random);
-    }
+      }
 
-    /* Sidebar stats */
-    function buildSidebarStats() {
-        const container = document.getElementById('sidebarStats');
+      /* ── Sidebar stats ─────────────────────────────────── */
+      function buildSidebarStats() {
+        const container = document.getElementById("sidebarStats");
         const posMap = {};
-        dictionary.forEach(e => {
-            posMap[e.part_of_speech] = (posMap[e.part_of_speech] || 0) + 1;
+        dictionary.forEach((e) => {
+          posMap[e.part_of_speech] = (posMap[e.part_of_speech] || 0) + 1;
         });
-        const topPos = Object.entries(posMap).sort((a,b) => b[1]-a[1]).slice(0,4);
+        const topPos = Object.entries(posMap)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 4);
 
         container.innerHTML = `
-            <div class="mb-3">
-                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">Corpus</p>
-                <div class="flex items-baseline gap-1.5">
-                    <span class="text-2xl font-bold text-brand-600 dark:text-brand-300">${dictionary.length.toLocaleString()}</span>
-                    <span class="text-xs text-slate-500 dark:text-slate-400">words</span>
+            <div class="mb-4">
+                <p class="stat-label mb-1.5">Corpus</p>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-xl font-bold text-ink-900 dark:text-ink-100">${dictionary.length.toLocaleString()}</span>
+                    <span class="text-xs text-ink-400 dark:text-ink-500">words</span>
                 </div>
             </div>
             <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">Parts of speech</p>
-                <div class="space-y-1.5">
-                    ${topPos.map(([pos, count]) => `
+                <p class="stat-label mb-2">Parts of Speech</p>
+                <div class="space-y-1">
+                    ${topPos
+                      .map(
+                        ([pos, count]) => `
                         <div class="flex items-center justify-between">
-                            <span class="text-xs text-slate-600 dark:text-slate-400 capitalize">${pos}</span>
-                            <span class="text-xs font-semibold text-brand-600 dark:text-brand-300">${count.toLocaleString()}</span>
+                            <span class="text-xs text-ink-500 dark:text-ink-400 capitalize">${pos}</span>
+                            <span class="text-xs font-semibold text-ink-700 dark:text-ink-300">${count.toLocaleString()}</span>
                         </div>
-                    `).join('')}
+                    `,
+                      )
+                      .join("")}
                 </div>
             </div>
         `;
-    }
+      }
 
-    /* Letter nav */
-    function buildLetterNav() {
-        const letters = new Set(dictionary.map(e => e.word.charAt(0)));
-        const container = document.getElementById('letterNav');
-        container.innerHTML = [...letters].slice(0, 30).map(l => `
-            <button onclick="filterByLetter('${l}')"
-                class="w-7 h-7 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400
-                       hover:bg-brand-100 dark:hover:bg-brand-900/40 hover:text-brand-600 dark:hover:text-brand-300
-                       transition-colors border border-transparent hover:border-brand-200 dark:hover:border-brand-800">
-                ${l}
-            </button>
-        `).join('');
-    }
+      /* ── Letter nav ────────────────────────────────────── */
+      function buildLetterNav() {
+        const letters = new Set(dictionary.map((e) => e.word.charAt(0)));
+        const container = document.getElementById("letterNav");
+        container.innerHTML = [...letters]
+          .slice(0, 30)
+          .map(
+            (l) => `
+            <button onclick="filterByLetter('${l}')" class="letter-btn font-bengali">${l}</button>
+        `,
+          )
+          .join("");
+      }
 
-    function filterByLetter(letter) {
+      function filterByLetter(letter) {
         searchInput.value = letter;
-        clearBtn.style.display = 'flex';
-        const res = dictionary.filter(e => e.word.startsWith(letter)).slice(0, 48);
+        clearBtn.style.display = "flex";
+        const res = dictionary
+          .filter((e) => e.word.startsWith(letter))
+          .slice(0, 60);
         renderResults(res, `${res.length} words starting with "${letter}"`);
         closeSidebar();
-    }
-</script>
-
-</body>
+      }
+    </script>
+  </body>
 </html>
